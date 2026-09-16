@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-ink-50: #f7f7f8;
+  --color-ink-100: #ededf0;
+  --color-ink-200: #d9d9e0;
+  --color-ink-300: #b8b8c4;
+  --color-ink-400: #8e8ea0;
+  --color-ink-500: #6b6b80;
+  --color-ink-600: #52525f;
+  --color-ink-700: #3f3f4a;
+  --color-ink-800: #26262e;
+  --color-ink-900: #16161c;
+  --color-ink-950: #0c0c10;
+
+  --color-brand-50: #f3f1ff;
+  --color-brand-100: #e9e5ff;
+  --color-brand-200: #d5cdff;
+  --color-brand-300: #b8a8ff;
+  --color-brand-400: #9878ff;
+  --color-brand-500: #7c4dff;
+  --color-brand-600: #6d28d9;
+  --color-brand-700: #5b21b6;
+  --color-brand-800: #4c1d95;
+  --color-brand-900: #2e1065;
+
+  --color-signal-strong: #10b981;
+  --color-signal-good: #84cc16;
+  --color-signal-fair: #f59e0b;
+  --color-signal-weak: #ef4444;
+}
+
+:root {
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --panel: #ffffff;
+  --border: #e8e8ec;
+  --fg: #16161c;
+  --fg-muted: #6b6b80;
+  --ring: #7c4dff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0c10;
+    --bg-subtle: #101015;
+    --panel: #16161c;
+    --border: #26262e;
+    --fg: #f2f2f5;
+    --fg-muted: #8e8ea0;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-brand-500);
+    color: white;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility surface {
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
+@utility text-muted {
+  color: var(--fg-muted);
+}
+
+/* Landing page motion, disabled for anyone who asked us not to move things. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.rise {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee { animation: marquee 38s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .marquee { animation: none !important; }
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--border) 65%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--border) 65%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   Data-viz tokens. Categorical slots are the validated default palette:
+   all six pass the lightness band, chroma floor, adjacent CVD separation and
+   normal-vision floor in both modes. Three light-mode slots sit under 3:1 on
+   the light surface, so every chart using them ships visible direct labels.
+   --------------------------------------------------------------------------- */
+.viz-root {
+  --viz-surface: var(--panel);
+  --viz-grid: color-mix(in srgb, var(--border) 80%, transparent);
+  --viz-text: var(--fg);
+  --viz-text-muted: var(--fg-muted);
+
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+
+  /* Single-hue sequential, used where the encoding is magnitude not identity. */
+  --seq: #6d28d9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --series-6: #008300;
+    --seq: #9878ff;
+  }
+}
+
+:root[data-theme="dark"] .viz-root {
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --seq: #9878ff;
+}

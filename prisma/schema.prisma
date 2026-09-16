@@ -1,0 +1,283 @@
+// Postwave schema.
+// NOTE: enum-ish columns and JSON blobs are stored as String so the exact same
+// schema runs on SQLite (local dev) and Postgres (production) with no edits
+// beyond the `provider` line, which scripts/db-provider.mjs flips for you.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                   String   @id @default(cuid())
+  email                String   @unique
+  passwordHash         String
+  name                 String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Billing (Stripe test mode)
+  plan                 String   @default("free") // free | pro
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String?
+  stripeStatus         String?
+  currentPeriodEnd     DateTime?
+
+  sessions   Session[]
+  workspaces Workspace[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// A brand / client. Agencies run several; solo users have one.
+model Workspace {
+  id        String   @id @default(cuid())
+  ownerId   String
+  name      String
+  slug      String   @unique
+  timezone  String   @default("UTC")
+  createdAt DateTime @default(now())
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  accounts         SocialAccount[]
+  posts            Post[]
+  voiceProfiles    VoiceProfile[]
+  campaigns        Campaign[]
+  queueSlots       QueueSlot[]
+  predictorWeights PredictorWeights?
+
+  @@index([ownerId])
+}
+
+model SocialAccount {
+  id             String    @id @default(cuid())
+  workspaceId    String
+  platform       String // x | linkedin | instagram | facebook | threads | mastodon
+  platformUserId String
+  handle         String
+  displayName    String?
+  avatarUrl      String?
+  accessToken    String?
+  refreshToken   String?
+  tokenExpiresAt DateTime?
+  scope          String?
+  /// JSON: platform-specific extras (LinkedIn person URN, IG business id, ...)
+  meta           String    @default("{}")
+  /// true when connected through the built-in sandbox connector (no real API keys)
+  isSandbox      Boolean   @default(false)
+  status         String    @default("active") // active | expired | revoked
+  createdAt      DateTime  @default(now())
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  targets   PostTarget[]
+
+  @@unique([workspaceId, platform, platformUserId])
+  @@index([workspaceId])
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  workspaceId String
+  campaignId  String?
+  /// The canonical "compose once" body. Per-platform overrides live on PostTarget.
+  body        String
+  /// JSON array of media URLs
+  mediaUrls   String    @default("[]")
+  status      String    @default("draft") // draft | scheduled | publishing | published | failed | needs_approval
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  source      String    @default("manual") // manual | ai | autopilot
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaign  Campaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  targets   PostTarget[]
+  scores    PostScore[]
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, scheduledAt])
+}
+
+model PostTarget {
+  id        String    @id @default(cuid())
+  postId    String
+  accountId String
+  /// null => use Post.body verbatim
+  override  String?
+  status    String    @default("pending") // pending | published | failed
+  remoteId  String?
+  remoteUrl String?
+  error     String?
+  publishedAt DateTime?
+
+  post    Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  account SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  metrics PostMetric[]
+
+  @@unique([postId, accountId])
+  @@index([postId])
+}
+
+model PostMetric {
+  id           String   @id @default(cuid())
+  postTargetId String
+  impressions  Int      @default(0)
+  likes        Int      @default(0)
+  comments     Int      @default(0)
+  shares       Int      @default(0)
+  clicks       Int      @default(0)
+  fetchedAt    DateTime @default(now())
+
+  target PostTarget @relation(fields: [postTargetId], references: [id], onDelete: Cascade)
+
+  @@index([postTargetId, fetchedAt])
+}
+
+// ---------------------------------------------------------------------------
+// USP 1 — Voice Fingerprint
+// ---------------------------------------------------------------------------
+
+model VoiceProfile {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String   @default("Default voice")
+  isDefault   Boolean  @default(true)
+  /// Human-readable paragraph the writer model is conditioned on
+  summary     String   @default("")
+  /// JSON: { tone, rhythm, vocabulary[], hookPatterns[], emojiPolicy, avgSentenceWords, ... }
+  traits      String   @default("{}")
+  /// JSON string[] of phrases/moves to lean into
+  doList      String    @default("[]")
+  /// JSON string[] of banned words / tics
+  dontList    String    @default("[]")
+  sampleCount Int      @default(0)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  workspace Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  samples   VoiceSample[]
+
+  @@index([workspaceId])
+}
+
+model VoiceSample {
+  id             String   @id @default(cuid())
+  voiceProfileId String
+  text           String
+  platform       String?
+  source         String   @default("paste") // paste | import | published
+  createdAt      DateTime @default(now())
+
+  profile VoiceProfile @relation(fields: [voiceProfileId], references: [id], onDelete: Cascade)
+
+  @@index([voiceProfileId])
+}
+
+// ---------------------------------------------------------------------------
+// USP 2 — Pre-flight predictor that learns from this workspace's own analytics
+// ---------------------------------------------------------------------------
+
+model PostScore {
+  id        String   @id @default(cuid())
+  postId    String
+  platform  String
+  voiceMatch  Int    @default(0) // 0-100
+  hook        Int    @default(0)
+  readability Int    @default(0)
+  cta         Int    @default(0)
+  lengthFit   Int    @default(0)
+  algoRisk    Int    @default(0) // 0 = safe, 100 = risky
+  predicted   Int    @default(0) // 0-100 composite
+  /// JSON: { signals: [...], suggestions: [...] }
+  rationale   String @default("{}")
+  createdAt   DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, platform])
+  @@index([postId])
+}
+
+/// Per-workspace regression weights, refit from real PostMetric data.
+model PredictorWeights {
+  id          String   @id @default(cuid())
+  workspaceId String   @unique
+  /// JSON: { hook: 0.3, readability: 0.1, ... , intercept: 40 }
+  weights     String   @default("{}")
+  samples     Int      @default(0)
+  trainedAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------------------
+// USP 3 — Autopilot queue
+// ---------------------------------------------------------------------------
+
+model Campaign {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  topic       String   @default("")
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  posts     Post[]
+
+  @@index([workspaceId])
+}
+
+/// A recurring publishing slot. The queue drops the next approved draft into
+/// the soonest free slot, so "schedule" never means "pick a datetime by hand".
+model QueueSlot {
+  id          String @id @default(cuid())
+  workspaceId String
+  dayOfWeek   Int // 0 = Sunday
+  hour        Int
+  minute      Int    @default(0)
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, dayOfWeek, hour, minute])
+  @@index([workspaceId])
+}
+
+// ---------------------------------------------------------------------------
+// Operational tables
+// ---------------------------------------------------------------------------
+
+/// Fixed-window rate limit counters. Shared across instances, unlike memory.
+model RateLimit {
+  id          String   @id @default(cuid())
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+  expiresAt   DateTime
+
+  @@unique([key, windowStart])
+  @@index([expiresAt])
+}
+
+/// Stripe delivers webhooks at least once; this makes handling exactly once.
+model ProcessedWebhook {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
+}
