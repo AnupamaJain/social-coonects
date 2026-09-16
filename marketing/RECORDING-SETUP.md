@@ -76,7 +76,7 @@ score — that's the twist the script depends on, so don't "fix" it.
 
 Record all of these in one pass. Every script cuts from this footage.
 
-- [ ] Compose, empty → paste the bad post → score resolves at 29
+- [ ] Compose, empty → paste the bad post → score resolves at 28
 - [ ] Slow scroll of the six signals on the bad post
 - [ ] Click **Make it sound like me** → rewrite → score climbs to 86
 - [ ] Typing the good post from scratch, score updating live as you type

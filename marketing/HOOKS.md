@@ -40,7 +40,7 @@ no.
 
 ## Demonstration — the screen is the hook
 
-- *(silent, just the score falling to 29)* "…that's what AI writing scores."
+- *(silent, just the score falling to 28)* "…that's what AI writing scores."
 - *(typing, score climbing live)* "Watch the number."
 
 ---

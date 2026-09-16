@@ -22,7 +22,7 @@ cringe of AI-written LinkedIn slop, and the video punishes it on screen.
 | Time | Shot | On screen | Voiceover |
 |---|---|---|---|
 | 0:00–0:03 | Screen recording: pasting an obviously AI-written post into the composer | *(the post itself is the visual)* | "I asked ChatGPT for a LinkedIn post." |
-| 0:03–0:06 | The score panel resolves. **Hold on the number. 1× speed.** Red **29**. | `29 / 100` | "Then I ran it through a scorer." |
+| 0:03–0:06 | The score panel resolves. **Hold on the number. 1× speed.** Red **28**. | `28 / 100` | "Then I ran it through a scorer." |
 | 0:06–0:12 | Slow scroll down the six signals. Linger on Hook **5** and Algorithm risk. | `Hook — 5` · `generic AI-sounding opener` | "Hook: five out of a hundred. Generic AI opener. Seven hashtags. Engagement bait." |
 | 0:12–0:16 | Cursor moves to **Make it sound like me**. Click. | `Make it sound like me` | "So I trained it on ten posts I'd actually written." |
 | 0:16–0:21 | Text rewrites. Score climbs **28 → 87**. **1× speed. Do not cut this.** | `87 / 100` `Voice match 89%` | "Same idea. My words." |
