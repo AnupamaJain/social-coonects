@@ -4,6 +4,7 @@ import { Logo } from "./logo";
 
 const LINKS = [
   { label: "Tour", href: "#tour" },
+  { label: "Anatomy", href: "#anatomy" },
   { label: "Voice", href: "#voice" },
   { label: "Score", href: "#predict" },
   { label: "Autopilot", href: "#autopilot" },

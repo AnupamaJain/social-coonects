@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { MarketingNav } from "@/components/marketing/nav";
 import { DoodleLeft, DoodleRight, Sparkle } from "@/components/marketing/doodles";
 import {
-  AnalyticsMini, Dial, PostGrid, PreviewMini, SignalStack,
+  AnalyticsMini, Dial, PreviewMini, SignalStack,
   Underline, VoiceWave, WeekStrip,
 } from "@/components/marketing/graphics";
 import {
@@ -15,6 +15,9 @@ import { LiveDemo } from "@/components/marketing/live-demo";
 import { DemoPlayer } from "@/components/marketing/demo-player";
 import { CalendarLive } from "@/components/marketing/calendar-live";
 import { CaseStudy } from "@/components/marketing/case-study";
+import { PostGrid3D } from "@/components/marketing/post-grid-3d";
+import { Anatomy } from "@/components/marketing/anatomy";
+import { Pipeline } from "@/components/marketing/pipeline";
 import { Showcase } from "@/components/marketing/showcase";
 import { Avatar } from "@/components/marketing/avatar";
 import { TestimonialForm } from "@/components/marketing/testimonials";
@@ -224,6 +227,20 @@ export default async function LandingPage() {
       </Section>
 
       {/* ============================================================== */}
+      {/* Anatomy of a bad post                                           */}
+      {/* ============================================================== */}
+      <Section id="anatomy" tone="subtle">
+        <Reveal>
+          <SectionTitle center sub="Five faults, all of them things the scorer actually looks for. Hover one to see what it costs you.">
+            Why that post didn&apos;t work
+          </SectionTitle>
+        </Reveal>
+        <Reveal delay={100} className="mt-12">
+          <Anatomy />
+        </Reveal>
+      </Section>
+
+      {/* ============================================================== */}
       {/* Story: 180 posts                                                */}
       {/* ============================================================== */}
       <Section>
@@ -237,7 +254,7 @@ export default async function LandingPage() {
               </span>
             </SectionTitle>
           </div>
-          <Reveal delay={100}><PostGrid /></Reveal>
+          <PostGrid3D />
         </div>
       </Section>
 
@@ -266,6 +283,9 @@ export default async function LandingPage() {
         </Reveal>
         <Reveal delay={100} className="mt-12">
           <HowItWorks steps={HOW_IT_WORKS} />
+        </Reveal>
+        <Reveal delay={150} className="mt-14">
+          <Pipeline />
         </Reveal>
       </Section>
 

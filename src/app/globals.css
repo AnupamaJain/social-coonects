@@ -250,6 +250,12 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --color-ink-200: #322c26;
+  }
+}
+
 :root[data-theme="dark"] .viz-root {
   --series-1: #d95926;
   --series-2: #199e70;
