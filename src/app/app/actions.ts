@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db, readJson, writeJson } from "@/lib/db";
-import { requireWorkspace } from "@/lib/auth";
+import { requireUser, requireWorkspace } from "@/lib/auth";
+import { isAdmin } from "@/lib/admin";
 import { planFor } from "@/lib/billing";
 import {
   nextQueueSlot, publishPost, refreshMetrics, rescorePost,
@@ -433,4 +434,20 @@ export async function createWorkspace(formData: FormData) {
   await switchWorkspace(workspace.id);
   bump();
   return { ok: true, id: workspace.id };
+}
+
+// ---------------------------------------------------------------------------
+// Testimonials (admin only)
+// ---------------------------------------------------------------------------
+
+export async function moderateTestimonial(id: string, action: "approve" | "unapprove" | "delete") {
+  const user = await requireUser();
+  if (!isAdmin(user)) return { error: "Not allowed." };
+
+  if (action === "delete") await db.testimonial.delete({ where: { id } });
+  else await db.testimonial.update({ where: { id }, data: { approved: action === "approve" } });
+
+  revalidatePath("/");
+  revalidatePath("/app/settings");
+  return { ok: true };
 }

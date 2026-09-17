@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, Briefcase, PenLine, Play, Users } from "lucide-react";
+import { ArrowRight, Briefcase, PenLine, Star, Users } from "lucide-react";
 import { ButtonLink } from "@/components/ui";
 import { getPlatform } from "@/lib/platforms/registry";
 import type { PlatformId } from "@/lib/platforms/types";
 import { Logo } from "./logo";
+import { BrandChip, BrandLogo } from "./brand-logos";
+import { Avatar } from "./avatar";
 import { DoodleCta } from "./doodles";
 import { Counter } from "./counter";
 
@@ -110,9 +112,9 @@ export function ChannelMarquee({ channels }: { channels: PlatformId[] }) {
         return (
           <span
             key={id}
-            className="surface inline-flex shrink-0 items-center gap-2.5 rounded-full py-2 pl-2.5 pr-4 text-sm font-medium"
+            className="surface inline-flex shrink-0 items-center gap-2.5 rounded-full py-2 pl-3 pr-4 text-sm font-medium"
           >
-            <span className={`size-5 rounded-full ${p.accent}`} />
+            <BrandLogo platform={id} className="size-4" />
             {p.name}
           </span>
         );
@@ -127,7 +129,7 @@ export function ProofStrip({ items }: { items: { big: string; small: string }[] 
       {items.map((it, i) => (
         <div
           key={i}
-          className="surface flex w-56 shrink-0 flex-col justify-between rounded-2xl p-5"
+          className="surface flex w-56 shrink-0 flex-col justify-between rounded-2xl p-5 lift"
         >
           <p className="font-serif text-3xl font-semibold tabular-nums tracking-tight">
             <Counter value={it.big} />
@@ -153,7 +155,7 @@ export function AudienceGrid({
         return (
           <div
             key={a.title}
-            className="surface group rounded-2xl p-7 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink-900/5"
+            className="surface group rounded-2xl p-7 lift"
           >
             <span className="grid size-11 place-items-center rounded-xl bg-clay-500/10 text-clay-600 transition-colors group-hover:bg-clay-500 group-hover:text-white dark:text-clay-400">
               <Icon className="size-5" />
@@ -167,37 +169,41 @@ export function AudienceGrid({
   );
 }
 
-/** Demo video slot. With no URL it shows a poster, not a broken embed. */
+/** Demo video slot. With no URL it renders the interactive walkthrough instead. */
 export function VideoFrame({
   url,
-  poster,
+  fallback,
 }: {
   url?: string;
-  poster: React.ReactNode;
+  fallback: React.ReactNode;
 }) {
+  if (!url) return <>{fallback}</>;
   return (
     <div className="surface relative mx-auto aspect-video max-w-4xl overflow-hidden rounded-2xl shadow-2xl shadow-ink-900/10">
-      {url ? (
-        <iframe
-          src={url}
-          title="Sixfold demo"
-          className="absolute inset-0 size-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      ) : (
-        <>
-          <div className="absolute inset-0 grid place-items-center bg-[var(--bg-subtle)] p-8">
-            {poster}
-          </div>
-          <span className="absolute inset-0 grid place-items-center">
-            <span className="grid size-16 place-items-center rounded-full bg-ink-900 text-ink-50 shadow-xl dark:bg-ink-50 dark:text-ink-950">
-              <Play className="ml-0.5 size-6" fill="currentColor" />
-            </span>
-          </span>
-        </>
-      )}
+      <iframe
+        src={url}
+        title="Sixfold demo"
+        className="absolute inset-0 size-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
     </div>
+  );
+}
+
+export function HowItWorks({ steps }: { steps: { name: string; text: string }[] }) {
+  return (
+    <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {steps.map((s, i) => (
+        <li key={s.name} className="surface group relative rounded-2xl p-6 lift">
+          <span className="font-serif text-3xl font-semibold text-clay-500 transition-transform duration-300 group-hover:-translate-y-0.5">
+            0{i + 1}
+          </span>
+          <h3 className="mt-3 font-serif text-lg font-semibold">{s.name}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted">{s.text}</p>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -205,8 +211,8 @@ export function AiGrid({ items }: { items: { title: string; body: string }[] }) 
   return (
     <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border bg-[var(--border)] sm:grid-cols-2">
       {items.map((it, i) => (
-        <div key={it.title} className="bg-[var(--panel)] p-7">
-          <span className="font-serif text-sm font-semibold text-clay-500">
+        <div key={it.title} className="group bg-[var(--panel)] p-7 transition-colors duration-300 hover:bg-[var(--bg-subtle)]">
+          <span className="inline-block font-serif text-sm font-semibold text-clay-500 transition-transform duration-300 group-hover:translate-x-1">
             0{i + 1}
           </span>
           <h3 className="mt-3 font-serif text-lg font-semibold">{it.title}</h3>
@@ -240,7 +246,7 @@ export function ToolRow({
         <p className="mt-4 max-w-md text-lg leading-relaxed text-muted">{body}</p>
       </div>
       <figure
-        className={`surface rounded-2xl p-6 shadow-xl shadow-ink-900/5 ${flip ? "md:order-1" : ""}`}
+        className={`surface rounded-2xl p-6 shadow-xl shadow-ink-900/5 lift ${flip ? "md:order-1" : ""}`}
       >
         {graphic}
       </figure>
@@ -256,10 +262,13 @@ export function ChannelGrid({ channels }: { channels: PlatformId[] }) {
         return (
           <div
             key={id}
-            className="surface flex flex-col items-center gap-3 rounded-2xl p-6 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink-900/5"
+            className="surface group flex flex-col items-center gap-3 rounded-2xl p-6 lift"
           >
-            <span className={`size-10 rounded-full ${p.accent}`} />
+            <BrandChip platform={id} className="group-hover:scale-110" />
             <span className="text-sm font-medium">{p.name}</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted">
+              {p.charLimit.toLocaleString()} chars
+            </span>
           </div>
         );
       })}
@@ -270,18 +279,21 @@ export function ChannelGrid({ channels }: { channels: PlatformId[] }) {
 export function WallOfLove({
   items,
 }: {
-  items: { quote: string; name: string; role: string; handle?: string; href?: string }[];
+  items: { quote: string; name: string; role: string; handle?: string | null; href?: string; rating?: number }[];
 }) {
   if (!items.length) return null;
   return (
     <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5 [&>*]:break-inside-avoid">
       {items.map((t, i) => (
-        <figure key={i} className="surface rounded-2xl p-6">
+        <figure key={i} className="surface rounded-2xl p-6 lift">
+          {t.rating ? (
+            <p className="mb-3 flex gap-0.5" aria-label={`${t.rating} out of 5`}>
+              {[1, 2, 3, 4, 5].map((n) => <Star key={n} className={`size-3.5 ${n <= (t.rating ?? 0) ? "fill-clay-500 text-clay-500" : "text-ink-300"}`} />)}
+            </p>
+          ) : null}
           <blockquote className="text-[15px] leading-relaxed">&ldquo;{t.quote}&rdquo;</blockquote>
           <figcaption className="mt-5 flex items-center gap-3">
-            <span className="grid size-9 place-items-center rounded-full bg-ink-900 text-xs font-semibold text-ink-50 dark:bg-ink-100 dark:text-ink-950">
-              {t.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
-            </span>
+            <Avatar seed={t.name} size={38} />
             <span className="min-w-0">
               <span className="block text-sm font-medium">{t.name}</span>
               <span className="block text-xs text-muted">
@@ -300,7 +312,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
     <div className="mx-auto max-w-3xl divide-y rounded-2xl border">
       {items.map((it) => (
         <details key={it.q} className="group px-6 py-5 open:bg-[var(--bg-subtle)]">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium [&::-webkit-details-marker]:hidden">
+          <summary className="-mx-6 flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-1 font-medium transition-colors hover:text-clay-600 dark:hover:text-clay-400 [&::-webkit-details-marker]:hidden">
             {it.q}
             <span className="shrink-0 font-serif text-xl leading-none text-clay-500 transition-transform group-open:rotate-45">
               +

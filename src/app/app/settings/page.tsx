@@ -7,12 +7,19 @@ import { planFor } from "@/lib/billing";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { Card, ButtonLink } from "@/components/ui";
 import { QueueEditor } from "./queue-editor";
+import { TestimonialsAdmin } from "./testimonials-admin";
+import { isAdmin } from "@/lib/admin";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const { workspace, user } = await requireWorkspace();
   const plan = planFor(user.plan);
+
+  const admin = isAdmin(user);
+  const testimonials = admin
+    ? await db.testimonial.findMany({ orderBy: [{ approved: "asc" }, { createdAt: "desc" }] })
+    : [];
 
   const slots = await db.queueSlot.findMany({
     where: { workspaceId: workspace.id },
@@ -51,6 +58,10 @@ export default async function SettingsPage() {
               </ButtonLink>
             </div>
           </Card>
+
+          {admin ? (
+            <TestimonialsAdmin items={testimonials.map((t) => ({ ...t, createdAt: t.createdAt.toISOString() }))} />
+          ) : null}
 
           <Card className="p-5">
             <h2 className="font-semibold tracking-tight">Account</h2>

@@ -16,7 +16,7 @@
     "db:reset": "prisma migrate reset --force && npm run db:seed",
     "postinstall": "node scripts/db-provider.mjs && prisma generate",
     "build:local": "prisma generate && next build",
-    "db:migrate:pg": "node scripts/sync-pg-migration.mjs",
+    "db:migrate:pg": "node scripts/pg-migration.mjs",
     "check": "npm run typecheck && npm run lint && npm run test",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -39,6 +39,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
+    "simple-icons": "^16.31.0",
     "stripe": "^22.6.2",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.5"

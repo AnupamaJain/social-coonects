@@ -3,7 +3,8 @@
 import { Heart, MessageCircle, Repeat2, Send, Bookmark, ThumbsUp } from "lucide-react";
 import { getPlatform } from "@/lib/platforms/registry";
 import type { PlatformId } from "@/lib/platforms/types";
-import { initials } from "@/lib/utils";
+import { Avatar as Illustrated } from "@/components/marketing/avatar";
+import { BrandLogo } from "@/components/marketing/brand-logos";
 
 interface PreviewProps {
   platform: PlatformId;
@@ -17,11 +18,8 @@ function Avatar({ name, url, rounded = "rounded-full" }: { name: string; url?: s
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={url} alt="" className={`size-10 shrink-0 object-cover ${rounded}`} />;
   }
-  return (
-    <span className={`grid size-10 shrink-0 place-items-center bg-ink-800 text-xs font-semibold text-white ${rounded}`}>
-      {initials(name)}
-    </span>
-  );
+  // No remote avatar: draw one rather than show a grey initials block.
+  return <Illustrated seed={name} size={40} className={rounded === "rounded-lg" ? "!rounded-lg" : ""} />;
 }
 
 /** Renders the body the way each platform truncates and formats it. */
@@ -79,6 +77,7 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
             <div className="flex items-center gap-1.5 text-[15px]">
               <span className="font-semibold">{author.name}</span>
               <span className="text-muted">{author.handle} · 1m</span>
+              <BrandLogo platform="x" className="ml-auto size-4 shrink-0" />
             </div>
             <div className={`mt-0.5 ${muted ? "text-muted" : ""}`}>
               <Body text={body} platform={platform} />
@@ -104,11 +103,12 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
       <div className="surface rounded-xl">
         <div className="flex gap-3 p-4 pb-2">
           <Avatar name={author.name} url={author.avatarUrl} />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold leading-tight">{author.name}</p>
             <p className="truncate text-xs text-muted">{author.handle}</p>
             <p className="text-xs text-muted">now · 🌐</p>
           </div>
+          <BrandLogo platform="linkedin" className="size-4 shrink-0" />
         </div>
         <div className={`px-4 pb-3 ${muted ? "text-muted" : ""}`}>
           {/* LinkedIn collapses at ~210 characters on desktop. */}
@@ -134,7 +134,8 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
       <div className="surface overflow-hidden rounded-xl">
         <div className="flex items-center gap-3 p-3">
           <Avatar name={author.name} url={author.avatarUrl} />
-          <span className="text-sm font-semibold">{author.handle.replace(/^@/, "")}</span>
+          <span className="flex-1 text-sm font-semibold">{author.handle.replace(/^@/, "")}</span>
+          <BrandLogo platform="instagram" className="size-4 shrink-0" />
         </div>
         {mediaUrls[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -169,7 +170,10 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
       <div className="flex gap-3">
         <Avatar name={author.name} url={author.avatarUrl} rounded={platform === "mastodon" ? "rounded-lg" : "rounded-full"} />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{author.name}</p>
+          <p className="flex items-center gap-2 text-sm font-semibold">
+            {author.name}
+            <BrandLogo platform={platform} className="size-3.5 shrink-0" />
+          </p>
           <p className="text-xs text-muted">{author.handle} · now · {def.name}</p>
           <div className={`mt-2 ${muted ? "text-muted" : ""}`}>
             <Body text={body} platform={platform} />

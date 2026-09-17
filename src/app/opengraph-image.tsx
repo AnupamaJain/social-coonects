@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/site";
+import { DEMO_SCORE_AI, DEMO_SCORE_HUMAN } from "@/content/demo-scores";
 
 export const alt = SITE.shortTitle;
 export const size = { width: 1200, height: 630 };
@@ -41,7 +42,7 @@ export default function OpenGraphImage() {
               Scores every draft before you publish. Learns which six of your 180 posts actually worked.
             </div>
             <div style={{ display: "flex", gap: 10 }}>
-              {[28, 87].map((n, i) => (
+              {[DEMO_SCORE_AI.predicted, DEMO_SCORE_HUMAN.predicted].map((n, i) => (
                 <div key={n} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 96, height: 96, borderRadius: 48, border: `8px solid ${i ? "#3f7a4f" : "#b4472f"}`, fontSize: 38, fontWeight: 700, fontFamily: "Georgia, serif" }}>
                   {n}
                 </div>

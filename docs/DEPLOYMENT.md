@@ -127,6 +127,20 @@ Check the `checks` block:
 missing and tokens are being written with a key that is public in this
 repository. Fix it before anyone connects an account.
 
+### Testimonials
+
+Quotes submitted from the landing page land unapproved. Set `ADMIN_EMAIL` to
+the account that should moderate them; that account gets a **Testimonials**
+card on `/app/settings` with approve / hide / delete. Approved quotes appear on
+the landing page and are emitted as `Review` + `AggregateRating` structured
+data. Nothing is ever seeded or invented.
+
+### Search Console
+
+Set `GOOGLE_SITE_VERIFICATION` (and `BING_SITE_VERIFICATION` if you use Bing)
+and redeploy; the tokens render as `<meta>` tags. Then submit
+`https://your-app.vercel.app/sitemap.xml` in each console.
+
 ### Stripe
 
 1. Dashboard → Developers → Webhooks → add endpoint
@@ -232,15 +246,14 @@ database from a snapshot instead.
 ## Changing the schema after launch
 
 1. Edit `prisma/schema.prisma`.
-2. `npm run db:migrate` — creates the SQLite migration for local development.
-3. `npm run db:migrate:pg` — **regenerates** the Postgres baseline.
+2. `npm run db:migrate -- --name <what_changed>` — SQLite migration for local dev.
+3. `npm run db:migrate:pg -- <what_changed>` — an **incremental** Postgres
+   migration, diffed from the schema committed at `HEAD` to your working copy.
+   Needs no database. Commit it with the schema change.
+4. Deploy. The build runs `prisma migrate deploy`, which applies only the
+   migrations it hasn't recorded.
 
-Step 3 is a squashed baseline and only safe while production can be recreated.
-Before your first real customer:
-
-- freeze `prisma/migrations-postgres/0_init`,
-- add incremental migrations next to it,
-- stop running `db:migrate:pg`.
-
-Background in
-[ARCHITECTURE.md](ARCHITECTURE.md#two-databases-one-schema).
+Step 3 diffs against the last *commit*, so run it before committing the schema
+change (or it will see nothing to do). Never edit or regenerate
+`prisma/migrations-postgres/0_init` — production has already applied it, and
+`migrate deploy` will not run it again.

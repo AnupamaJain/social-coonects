@@ -281,3 +281,18 @@ model ProcessedWebhook {
 
   @@index([processedAt])
 }
+
+/// Real quotes from real users. Submitted from the landing page, shown only
+/// once approved by the admin. Never seeded, never invented.
+model Testimonial {
+  id        String   @id @default(cuid())
+  quote     String
+  name      String
+  role      String
+  handle    String?
+  rating    Int      @default(5)
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([approved, createdAt])
+}

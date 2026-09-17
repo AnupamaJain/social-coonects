@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { PLANS } from "@/lib/billing";
 import { SITE, siteUrl } from "@/lib/site";
+import { HOW_IT_WORKS } from "@/content/landing";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -35,6 +36,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE.shortTitle,
     description: SITE.description,
+  },
+  // Search Console / Webmaster Tools tokens, only when present.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
   },
   robots: {
     index: true,
@@ -94,6 +100,19 @@ const structuredData = {
         "Per-platform analytics with a predictor calibration chart",
       ],
       publisher: { "@id": `${siteUrl}/#organization` },
+    },
+    {
+      "@type": "HowTo",
+      "@id": `${siteUrl}/#how-it-works`,
+      name: "How to schedule social media posts in your own voice with Sixfold",
+      totalTime: "PT5M",
+      step: HOW_IT_WORKS.map((s, i) => ({
+        "@type": "HowToStep",
+        position: i + 1,
+        name: s.name,
+        text: s.text,
+        url: `${siteUrl}/#how-it-works`,
+      })),
     },
   ],
 };

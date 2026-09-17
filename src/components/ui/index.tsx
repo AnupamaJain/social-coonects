@@ -17,10 +17,10 @@ const buttonBase =
 // it is used for every button on the page.
 const buttonVariants: Record<ButtonVariant, string> = {
   primary:
-    "bg-ink-900 text-ink-50 hover:bg-ink-800 dark:bg-ink-50 dark:text-ink-950 dark:hover:bg-white active:scale-[0.98]",
+    "bg-ink-900 text-ink-50 hover:bg-ink-800 hover:-translate-y-px hover:shadow-lg hover:shadow-ink-900/20 active:translate-y-0 active:scale-[0.97] active:shadow-none dark:bg-ink-50 dark:text-ink-950 dark:hover:bg-white",
   secondary:
-    "bg-clay-600 text-white hover:bg-clay-500 active:scale-[0.98]",
-  outline: "surface hover:bg-[var(--bg-subtle)] active:scale-[0.98]",
+    "bg-clay-600 text-white hover:bg-clay-500 hover:-translate-y-px hover:shadow-lg hover:shadow-clay-600/30 active:translate-y-0 active:scale-[0.97]",
+  outline: "surface hover:bg-[var(--bg-subtle)] hover:-translate-y-px hover:shadow-md active:translate-y-0 active:scale-[0.97]",
   ghost: "hover:bg-[var(--bg-subtle)] text-muted hover:text-[var(--fg)]",
   danger: "bg-red-700 text-white hover:bg-red-600 active:scale-[0.98]",
 };

@@ -3,30 +3,43 @@ import { getCurrentUser } from "@/lib/auth";
 import { MarketingNav } from "@/components/marketing/nav";
 import { DoodleLeft, DoodleRight, Sparkle } from "@/components/marketing/doodles";
 import {
-  AnalyticsMini, CalendarMini, Dial, PostGrid, PreviewMini, SignalStack,
+  AnalyticsMini, Dial, PostGrid, PreviewMini, SignalStack,
   Underline, VoiceWave, WeekStrip,
 } from "@/components/marketing/graphics";
 import {
   AiGrid, AnnouncementBar, AudienceGrid, ChannelGrid, ChannelMarquee, CtaBlock,
-  Faq, Footer, ProofStrip, Section, SectionTitle, ToolRow, VideoFrame, WallOfLove,
+  Faq, Footer, HowItWorks, ProofStrip, Section, SectionTitle, ToolRow, VideoFrame, WallOfLove,
 } from "@/components/marketing/sections";
 import { ButtonLink } from "@/components/ui";
 import { LiveDemo } from "@/components/marketing/live-demo";
+import { DemoPlayer } from "@/components/marketing/demo-player";
+import { CalendarLive } from "@/components/marketing/calendar-live";
+import { Avatar } from "@/components/marketing/avatar";
+import { TestimonialForm } from "@/components/marketing/testimonials";
+import { db } from "@/lib/db";
 import { Reveal } from "@/components/marketing/reveal";
 import { siteUrl } from "@/lib/site";
+import { DEMO_SCORE_HUMAN } from "@/content/demo-scores";
 import { PLANS } from "@/lib/billing";
 import {
-  AI_FEATURES, ANNOUNCEMENT, AUDIENCES, CHANNELS, FAQ, FOOTER, HERO, PROOF,
-  TESTIMONIALS, TOOLS,
+  AI_FEATURES, ANNOUNCEMENT, AUDIENCES, CHANNELS, FAQ, FOOTER, HERO, HOW_IT_WORKS,
+  PROOF, TESTIMONIALS, TOOLS,
 } from "@/content/landing";
 
 /** Set once you've recorded the demo (see marketing/RECORDING-SETUP.md). */
 const DEMO_VIDEO_URL: string | undefined = undefined;
 
 const TOOL_GRAPHICS: Record<string, React.ReactNode> = {
-  schedule: <CalendarMini />,
+  schedule: <CalendarLive />,
   voice: (
     <div>
+      <div className="mb-4 flex items-center gap-2.5 border-b pb-4">
+        <Avatar seed="Maya Osei" size={34} />
+        <div>
+          <p className="text-xs font-semibold leading-tight">Maya&apos;s fingerprint</p>
+          <p className="text-[10px] text-muted">measured from 10 posts</p>
+        </div>
+      </div>
       <VoiceWave />
       <div className="mt-4 grid grid-cols-3 gap-3 border-t pt-4 text-center">
         {[["13.4", "words / sentence"], ["38%", "short lines"], ["0.4", "emoji / post"]].map(([v, l]) => (
@@ -40,14 +53,11 @@ const TOOL_GRAPHICS: Record<string, React.ReactNode> = {
   ),
   score: (
     <div className="flex flex-col items-center gap-6">
-      <Dial score={87} size={150} caption="Predicted" />
+      <Dial score={DEMO_SCORE_HUMAN.predicted} size={150} caption="Predicted" />
       <SignalStack
-        signals={[
-          { label: "Hook", value: 91 },
-          { label: "Voice match", value: 89 },
-          { label: "Length fit", value: 96 },
-          { label: "Algorithm risk", value: 100 },
-        ]}
+        signals={DEMO_SCORE_HUMAN.signals
+          .filter((s) => ["Hook", "Voice match", "Length fit", "Algorithm risk"].includes(s.label))
+          .map((s) => ({ label: s.label, value: s.score }))}
       />
     </div>
   ),
@@ -83,12 +93,40 @@ const faqStructuredData = {
 };
 
 export default async function LandingPage() {
-  const user = await getCurrentUser();
+  const [user, approved] = await Promise.all([
+    getCurrentUser(),
+    db.testimonial.findMany({ where: { approved: true }, orderBy: { createdAt: "desc" }, take: 24 }),
+  ]);
+  const testimonials = [...TESTIMONIALS, ...approved];
+
+  // Ratings come only from approved, real submissions. Emitted only when there is at least one.
+  const reviewStructuredData = approved.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "@id": `${siteUrl}/#app`,
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: (approved.reduce((a, t) => a + t.rating, 0) / approved.length).toFixed(1),
+          reviewCount: approved.length,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        review: approved.slice(0, 10).map((t) => ({
+          "@type": "Review",
+          author: { "@type": "Person", name: t.name },
+          reviewBody: t.quote,
+          reviewRating: { "@type": "Rating", ratingValue: t.rating, bestRating: 5 },
+          datePublished: t.createdAt.toISOString().slice(0, 10),
+        })),
+      }
+    : null;
 
   return (
     <div className="min-h-dvh">
       <AnnouncementBar {...ANNOUNCEMENT} />
       <MarketingNav signedIn={Boolean(user)} />
+      <main>
 
       {/* ============================================================== */}
       {/* Hero                                                            */}
@@ -202,6 +240,20 @@ export default async function LandingPage() {
       </Section>
 
       {/* ============================================================== */}
+      {/* How it works — matches the HowTo schema in the layout           */}
+      {/* ============================================================== */}
+      <Section id="how-it-works" tone="subtle">
+        <Reveal>
+          <SectionTitle center sub="Five minutes from signup to your first scored, queued post.">
+            How it works
+          </SectionTitle>
+        </Reveal>
+        <Reveal delay={100} className="mt-12">
+          <HowItWorks steps={HOW_IT_WORKS} />
+        </Reveal>
+      </Section>
+
+      {/* ============================================================== */}
       {/* Who is it for                                                   */}
       {/* ============================================================== */}
       <Section tone="subtle">
@@ -219,16 +271,7 @@ export default async function LandingPage() {
           See Sixfold in action
         </SectionTitle>
         <Reveal className="mt-12">
-          <VideoFrame
-            url={DEMO_VIDEO_URL}
-            poster={
-              <div className="flex items-center gap-10">
-                <Dial score={28} size={120} caption="AI draft" />
-                <ArrowRight className="size-8 text-muted" />
-                <Dial score={87} size={120} caption="Your voice" />
-              </div>
-            }
-          />
+          <VideoFrame url={DEMO_VIDEO_URL} fallback={<DemoPlayer />} />
         </Reveal>
       </Section>
 
@@ -293,14 +336,28 @@ export default async function LandingPage() {
       {/* ============================================================== */}
       {/* Wall of love — renders only with real quotes                    */}
       {/* ============================================================== */}
-      {TESTIMONIALS.length > 0 ? (
-        <Section tone="subtle">
-          <SectionTitle center>Wall of love</SectionTitle>
-          <div className="mt-12">
-            <WallOfLove items={TESTIMONIALS} />
-          </div>
-        </Section>
-      ) : null}
+      <Section id="testimonials">
+        <Reveal>
+          <SectionTitle
+            center
+            sub={
+              testimonials.length
+                ? "Every quote here was written by a real user and read by a human before it went up."
+                : "Sixfold is new. We won't invent quotes — so the first ones here will be from people like you."
+            }
+          >
+            What people say
+          </SectionTitle>
+        </Reveal>
+        {testimonials.length ? (
+          <Reveal delay={100} className="mt-12">
+            <WallOfLove items={testimonials} />
+          </Reveal>
+        ) : null}
+        <Reveal delay={150} className="mx-auto mt-12 max-w-2xl">
+          <TestimonialForm />
+        </Reveal>
+      </Section>
 
       {/* ============================================================== */}
       {/* Pricing                                                         */}
@@ -362,7 +419,14 @@ export default async function LandingPage() {
         <CtaBlock title="Find your six." sub="Post less. Land harder." doodle={false} />
       </Section>
 
+      </main>
       <Footer {...FOOTER} />
+      {reviewStructuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewStructuredData).replace(/</g, "\\u003c") }}
+        />
+      ) : null}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData).replace(/</g, "\\u003c") }}

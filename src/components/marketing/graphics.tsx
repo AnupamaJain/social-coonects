@@ -1,3 +1,7 @@
+import { Avatar } from "./avatar";
+import { BrandLogo } from "./brand-logos";
+import { getPlatform } from "@/lib/platforms/registry";
+import type { PlatformId } from "@/lib/platforms/types";
 /**
  * Landing-page graphics.
  *
@@ -240,7 +244,7 @@ export function Underline({ className = "" }: { className?: string }) {
   );
 }
 
-/** A month, with a few scored posts sitting in their slots. */
+/** Static month grid. The animated version lives in calendar-live.tsx. */
 export function CalendarMini() {
   const posts: Record<number, number> = { 2: 84, 4: 77, 9: 91, 11: 68, 16: 88, 18: 79, 23: 82 };
   return (
@@ -269,36 +273,35 @@ export function CalendarMini() {
   );
 }
 
-/** The same post, rendered the way two platforms would show it. */
+/** The same post, rendered the way two platforms would actually show it. */
 export function PreviewMini() {
+  const platforms: { id: PlatformId; clamp: boolean }[] = [
+    { id: "linkedin", clamp: true },
+    { id: "x", clamp: false },
+  ];
   return (
     <div className="grid grid-cols-2 gap-3">
-      {[
-        { name: "LinkedIn", clamp: true },
-        { name: "X", clamp: false },
-      ].map((p) => (
-        <div key={p.name} className="surface rounded-xl p-3">
+      {platforms.map((p) => (
+        <div key={p.id} className="surface rounded-xl p-3">
           <div className="flex items-center gap-2">
-            <span className="size-5 rounded-full bg-ink-300 dark:bg-ink-700" />
-            <div className="space-y-1">
-              <span className="block h-1.5 w-14 rounded bg-ink-300 dark:bg-ink-700" />
-              <span className="block h-1 w-8 rounded bg-ink-200 dark:bg-ink-800" />
+            <Avatar seed="Maya Osei" size={26} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[11px] font-semibold leading-tight">Maya Osei</p>
+              <p className="truncate text-[9px] text-muted">Founder, Northwind</p>
             </div>
+            <BrandLogo platform={p.id} className="size-3.5" />
           </div>
-          <div className="mt-3 space-y-1.5">
-            <span className="block h-1.5 w-full rounded bg-ink-800 dark:bg-ink-200" />
-            <span className="block h-1.5 w-11/12 rounded bg-ink-300 dark:bg-ink-700" />
-            <span className="block h-1.5 w-4/5 rounded bg-ink-300 dark:bg-ink-700" />
+          <p className="mt-3 text-[11px] leading-snug">
+            We cut our posting volume by 60% and reach went up.
             {p.clamp ? (
-              <span className="block font-mono text-[9px] text-muted">…see more</span>
+              <span className="text-muted"> …<span className="font-medium">see more</span></span>
             ) : (
-              <>
-                <span className="block h-1.5 w-3/4 rounded bg-ink-300 dark:bg-ink-700" />
-                <span className="block h-1.5 w-2/5 rounded bg-ink-300 dark:bg-ink-700" />
-              </>
+              <span className="text-muted"> Turns out the algorithm was never the problem.</span>
             )}
-          </div>
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-wider text-muted">{p.name}</p>
+          </p>
+          <p className="mt-3 font-mono text-[9px] uppercase tracking-wider text-muted">
+            {getPlatform(p.id).name}
+          </p>
         </div>
       ))}
     </div>

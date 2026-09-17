@@ -6,6 +6,7 @@
  * Nothing in this file describes a feature that doesn't exist.
  */
 import type { PlatformId } from "@/lib/platforms/types";
+import { DEMO_SCORE_AI, DEMO_SCORE_HUMAN } from "./demo-scores";
 
 export const ANNOUNCEMENT = {
   label: "NEW",
@@ -27,7 +28,7 @@ export const HERO = {
 
 /** Product facts in the slot most sites fill with invented customer numbers. */
 export const PROOF = [
-  { big: "28 → 87", small: "one rewrite, same idea" },
+  { big: `${DEMO_SCORE_AI.predicted} → ${DEMO_SCORE_HUMAN.predicted}`, small: "one rewrite, same idea" },
   { big: "6", small: "signals scored per platform" },
   { big: "0", small: "posts publish without approval" },
   { big: "10", small: "samples to train your voice" },
@@ -131,6 +132,13 @@ export const TESTIMONIALS: {
   handle?: string;
   href?: string;
 }[] = [];
+
+export const HOW_IT_WORKS = [
+  { name: "Connect a channel", text: "Link X, LinkedIn, Instagram, Facebook, Threads or Mastodon — or a sandbox account to try the whole loop with no keys." },
+  { name: "Train your voice", text: "Paste five to ten posts you're proud of. Sixfold measures how you write and builds your Voice Fingerprint in seconds." },
+  { name: "Write and score", text: "Compose once. Six signals score the draft per platform as you type, and one click rewrites it in your voice." },
+  { name: "Approve into the queue", text: "Set a cadence once. Approved posts take the next free slot; nothing publishes without you." },
+];
 
 export const FAQ = [
   {

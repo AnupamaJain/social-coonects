@@ -125,6 +125,8 @@ in production. See `.env.example` for the full annotated list.
 | `APP_URL` | production | Inferred from `VERCEL_PROJECT_PRODUCTION_URL` on Vercel |
 | `AI_GATEWAY_API_KEY` *or* `ANTHROPIC_API_KEY` | no | Generation falls back to a template writer. Scoring and Voice Match are unaffected |
 | `AI_MODEL` | no | Defaults to `anthropic/claude-sonnet-5` |
+| `ADMIN_EMAIL` | no | Nobody can approve testimonials; nothing submitted shows publicly |
+| `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION` | no | No verification meta tags |
 | `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` | no | Billing page explains what's missing; everyone stays on the free plan |
 | `X_CLIENT_ID` / `X_CLIENT_SECRET` | no | X connects as a sandbox account |
 | `LINKEDIN_CLIENT_ID` / `LINKEDIN_CLIENT_SECRET` | no | LinkedIn connects as a sandbox account |
@@ -222,15 +224,16 @@ in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 | `npm run build` | Production build (switches provider, applies migrations) |
 | `npm run build:local` | Build without touching the database |
 | `npm run db:migrate` | Create/apply a SQLite migration (local) |
-| `npm run db:migrate:pg` | Regenerate the Postgres migration from the schema |
+| `npm run db:migrate:pg -- <name>` | Write an incremental Postgres migration from the committed schema to your working copy |
 | `npm run db:seed` | Demo account with 40 days of history |
 | `npm run db:reset` | Wipe and reseed |
 | `npm run db:studio` | Prisma Studio |
 | `npx tsx scripts/cleanup-test-users.ts` | Removes smoke-test accounts (needs a direct `DATABASE_URL`) |
 
 > After editing `prisma/schema.prisma`, run **both** `npm run db:migrate` and
-> `npm run db:migrate:pg`. SQLite and Postgres keep separate migration
-> histories — see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#two-databases-one-schema).
+> `npm run db:migrate:pg -- <name>` *before committing*. SQLite and Postgres
+> keep separate migration histories — see
+> [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#two-databases-one-schema).
 
 ---
 
@@ -248,6 +251,3 @@ Worth knowing before you charge anyone for this:
   aren't refreshed in the background; a user reconnects when one lapses.
 - **Single owner per workspace.** No team invite flow — an agency runs multiple
   brands under one login.
-- **The Postgres migration is a squashed baseline.** Fine pre-launch. Once you
-  have customer data, stop regenerating it and write incremental migrations
-  instead ([docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#two-databases-one-schema)).

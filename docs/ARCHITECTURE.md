@@ -174,10 +174,11 @@ prisma/migrations-postgres   Postgres, prisma migrate deploy (runs in the build)
 ```
 
 **After changing the schema, run both `npm run db:migrate` and
-`npm run db:migrate:pg`.** The Postgres side is currently a single squashed
-baseline, regenerated from the schema each time. That's appropriate pre-launch,
-when production can be recreated. The moment you have customer data it stops
-being appropriate: freeze the baseline and add incremental migrations beside it.
+`npm run db:migrate:pg -- <name>`, before committing.** The Postgres side is a
+frozen baseline (`0_init`) plus incremental migrations. `scripts/pg-migration.mjs`
+produces each increment by diffing the schema at git `HEAD` against the working
+copy with the provider forced to `postgresql`, so it needs no database and can't
+touch what production has already applied.
 
 ---
 
@@ -203,6 +204,5 @@ Detail in [SECURITY.md](SECURITY.md). The structural points:
 |---|---|---|
 | Heuristic scorer, not a learned model | A learned model would likely score better | It's explainable, instant, free, and works offline. Users act on *why* a post is weak, which a black box can't tell them |
 | SQLite locally | Two migration histories to maintain | `npm install && npm run dev` with no Docker and no cloud account is worth real friction elsewhere |
-| Squashed Postgres baseline | Must change before launch | Pre-launch the schema moves weekly; incremental migrations would be churn |
 | Sandbox connectors | Extra branch in every publish path | The product is fully demonstrable with zero platform approvals, which is most of the first-run experience |
 | No background token refresh | Users reconnect when tokens lapse | Each platform's refresh semantics differ enough that doing it properly is its own project |

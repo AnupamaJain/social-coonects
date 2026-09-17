@@ -21,7 +21,7 @@ export function MarketingNav({ signedIn }: { signedIn: boolean }) {
 
         <nav className="hidden items-center gap-7 text-sm text-muted md:flex">
           {LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="transition-colors hover:text-[var(--fg)]">
+            <a key={l.href} href={l.href} className="ul-slide transition-colors hover:text-[var(--fg)]">
               {l.label}
             </a>
           ))}

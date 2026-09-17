@@ -17,83 +17,12 @@ import { fetchMetrics } from "../src/lib/platforms/metrics";
 import { trainPredictor } from "../src/lib/predictor";
 import { slugify } from "../src/lib/utils";
 import type { PlatformId } from "../src/lib/platforms/types";
+import { DEMO_DONT_LIST, DEMO_VOICE_SAMPLES } from "../src/content/demo-voice";
 
 const EMAIL = "demo@sixfold.app";
 const PASSWORD = "sixfold-demo-2026";
 
-const VOICE_SAMPLES = [
-  `We cut our posting volume by 60% and reach went up.
-
-Turns out the algorithm was never the problem. We were publishing four mediocre posts a week because the calendar said to.
-
-Now we publish two. Both get read.
-
-What would you drop first?`,
-
-  `The best hire I ever made failed the take-home.
-
-She spent the whole 90 minutes questioning the brief instead of building it. Sent back three paragraphs on why the spec was wrong.
-
-She was right. We shipped her version.
-
-Take-homes measure compliance. Hire for the pushback.`,
-
-  `Everyone wants a content strategy.
-
-Nobody wants to read their last 40 posts and admit which ones worked.
-
-That audit takes an afternoon. The strategy falls out of it for free.`,
-
-  `A thing I got wrong for two years:
-
-I thought "consistency" meant posting every day.
-
-It means sounding like the same person every time you post.
-
-One of those is a calendar problem. The other is a voice problem. Only one of them compounds.`,
-
-  `We tracked every inbound lead back to its source last quarter.
-
-47% came from six posts.
-
-We published 180.
-
-I'm not saying stop publishing. I'm saying find your six.`,
-
-  `"Just be authentic" is the least actionable advice in this industry.
-
-Here's what it actually means in practice:
-
-Write the sentence you'd say out loud. Then delete the one you wrote to sound professional.
-
-That's it. That's the whole thing.`,
-
-  `Our best-performing post last year was 41 words.
-
-Our worst was a 1,200-word breakdown I spent a full day on.
-
-I still think the long one was better work. The audience disagreed, and they're the ones voting.`,
-
-  `Stopped using hashtags in January. Reach didn't move.
-
-Stopped tagging people who weren't in the story. Reach went up.
-
-Stopped putting the link in the post. Reach went up a lot.
-
-Three experiments, one afternoon each.`,
-
-  `The question I ask before every post now:
-
-Would I send this to one specific person I respect?
-
-If the answer is no, it's not a post. It's noise with a schedule.`,
-
-  `Content teams measure output because output is easy to count.
-
-Nobody's dashboard has a column for "did this change anyone's mind."
-
-That's the only column that matters.`,
-];
+const VOICE_SAMPLES = DEMO_VOICE_SAMPLES;
 
 const DEMO_POSTS = [
   `Most content calendars are a compliance document.\n\nThey exist so somebody can prove work happened, not so anybody reads anything.\n\nWe replaced ours with two rules: nothing ships under 70 on the score, and nothing ships that doesn't sound like us.\n\nOutput halved. Inbound doubled.`,
@@ -163,14 +92,7 @@ async function main() {
         "Break lines aggressively — most paragraphs are one sentence",
         "Close on a question or one short line",
       ]),
-      dontList: writeJson([
-        "delve",
-        "in today's fast-paced world",
-        "game changer",
-        "unlock",
-        "supercharge",
-        "it's no secret",
-      ]),
+      dontList: writeJson(DEMO_DONT_LIST),
       samples: {
         create: VOICE_SAMPLES.map((text) => ({ text, platform: "linkedin", source: "paste" })),
       },
