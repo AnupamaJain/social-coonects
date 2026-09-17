@@ -141,21 +141,44 @@ there.
 
 ### Cron
 
-Vercel reads `vercel.ts` and registers:
+**Vercel Hobby caps cron at one run per day**, and a deploy is *rejected
+outright* if `vercel.ts` asks for more. So the defaults are Hobby-compatible and
+the real scheduling runs elsewhere:
 
-| Path | Schedule |
+| Plan | What drives scheduling | Publishing interval |
+|---|---|---|
+| Hobby (default) | `.github/workflows/scheduler.yml` | every 5 minutes |
+| Pro | Vercel Cron, with `CRON_FREQUENT=1` set on the project | every 5 minutes |
+
+### On Hobby — GitHub Actions
+
+Add two repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
 |---|---|
-| `/api/cron/publish` | every 5 minutes |
-| `/api/cron/metrics` | every 6 hours |
+| `APP_URL` | `https://your-app.vercel.app` |
+| `CRON_SECRET` | the same value set on the Vercel project |
 
-Confirm both appear under the project's **Cron Jobs** tab. If they don't, nothing
-scheduled will ever publish. Vercel sends `Authorization: Bearer $CRON_SECRET`
+The workflow then runs every 5 minutes. Trigger it by hand once from the
+**Actions** tab (**Scheduler → Run workflow**) to confirm the secrets are right —
+a wrong `CRON_SECRET` shows up as a `401` in the step output.
+
+GitHub's scheduler is best-effort and can lag several minutes under load, so a
+post may go out slightly after its slot. Fine for social scheduling.
+
+### On Pro — Vercel Cron
+
+```bash
+vercel env add CRON_FREQUENT production   # value: 1
+vercel --prod
+```
+
+Then delete `.github/workflows/scheduler.yml`. Confirm both jobs appear under the
+project's **Cron Jobs** tab. Vercel sends `Authorization: Bearer $CRON_SECRET`
 automatically once the variable exists on the project.
 
-> Cron frequency is plan-limited on Vercel. On Hobby, cron runs once a day —
-> which is not enough for a scheduler. Either use Pro, or drive the endpoints
-> from an external scheduler (GitHub Actions, cron-job.org, your own box) with
-> the same bearer token.
+Running both at once is harmless — `publishDuePosts` only picks up posts whose
+scheduled time has already passed, so nothing publishes twice.
 
 ---
 

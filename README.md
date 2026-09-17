@@ -182,9 +182,13 @@ Two authenticated endpoints do the work:
 - `GET /api/cron/metrics` — pulls analytics per platform, then refits every
   workspace's predictor
 
-Locally, `npm run worker` polls them (publish every 30s, metrics every 5min). In
-production `vercel.ts` registers them as Vercel Cron jobs — every 5 minutes and
-every 6 hours respectively.
+Locally, `npm run worker` polls them (publish every 30s, metrics every 5min).
+
+In production, **Vercel's Hobby plan caps cron at one run per day** — and
+rejects a deploy that asks for more — so `.github/workflows/scheduler.yml`
+drives the endpoints every 5 minutes instead. On Pro, set `CRON_FREQUENT=1` on
+the project to use Vercel Cron and delete the workflow. Both are covered in
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 
@@ -222,6 +226,7 @@ in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 | `npm run db:seed` | Demo account with 40 days of history |
 | `npm run db:reset` | Wipe and reseed |
 | `npm run db:studio` | Prisma Studio |
+| `npx tsx scripts/cleanup-test-users.ts` | Removes smoke-test accounts (needs a direct `DATABASE_URL`) |
 
 > After editing `prisma/schema.prisma`, run **both** `npm run db:migrate` and
 > `npm run db:migrate:pg`. SQLite and Postgres keep separate migration

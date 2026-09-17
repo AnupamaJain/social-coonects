@@ -1,0 +1,47 @@
+name: Scheduler
+
+# Drives the two cron endpoints, because Vercel's Hobby plan caps cron at one
+# run per day. GitHub's scheduler is best-effort and can lag under load, so a
+# post may go out a few minutes after its slot — acceptable for social
+# scheduling, and free. On Vercel Pro, set CRON_FREQUENT=1 on the project and
+# delete this workflow.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   APP_URL      https://your-app.vercel.app
+#   CRON_SECRET  the same value set on the Vercel project
+
+on:
+  schedule:
+    # Publishing: every 5 minutes (GitHub's finest granularity).
+    - cron: "*/5 * * * *"
+    # Metrics + predictor retrain: every 6 hours.
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Which endpoint to run
+        type: choice
+        options: [publish, metrics, both]
+        default: both
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish due posts
+        if: github.event.schedule == '*/5 * * * *' || inputs.job == 'publish' || inputs.job == 'both'
+        run: |
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/publish")
+          cat /tmp/out.json
+          if [ "$code" != "200" ]; then echo "::error::publish returned $code"; exit 1; fi
+
+      - name: Refresh metrics and retrain predictors
+        if: github.event.schedule == '0 */6 * * *' || inputs.job == 'metrics' || inputs.job == 'both'
+        run: |
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/metrics")
+          cat /tmp/out.json
+          if [ "$code" != "200" ]; then echo "::error::metrics returned $code"; exit 1; fi
