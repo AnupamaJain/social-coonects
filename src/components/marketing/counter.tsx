@@ -31,6 +31,12 @@ export function Counter({ value, duration = 1100 }: { value: string; duration?: 
     return () => io.disconnect();
   }, [duration]);
 
-  const rendered = value.replace(/\d+/g, (n) => String(Math.round(Number(n) * progress)));
+  // Match a whole number including its thousands separators — matching bare
+  // \d+ splits "1,040" into "1" and "040" and renders "1,40".
+  const rendered = value.replace(/\d[\d,]*/g, (n) => {
+    const grouped = n.includes(",");
+    const next = Math.round(Number(n.replace(/,/g, "")) * progress);
+    return grouped ? next.toLocaleString() : String(next);
+  });
   return <span ref={ref} className="tabular-nums">{rendered}</span>;
 }
