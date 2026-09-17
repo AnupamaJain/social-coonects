@@ -30,7 +30,7 @@ function getKey(): Buffer {
     }
     // Development only: a fixed key so `npm run dev` works with no setup, and
     // so a restart can still read what the previous run wrote.
-    cachedKey = crypto.createHash("sha256").update("postwave-development-key").digest();
+    cachedKey = crypto.createHash("sha256").update("sixfold-development-key").digest();
     return cachedKey;
   }
 

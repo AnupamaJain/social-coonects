@@ -7,7 +7,7 @@ Why the system is shaped the way it is. For how to run it, see the
 
 ## The thesis
 
-Every scheduler solves distribution. Postwave is betting that distribution is
+Every scheduler solves distribution. Sixfold is betting that distribution is
 commoditised and *judgement* is not — what to say, in whose voice, and whether
 it will work. That bet shapes three subsystems, and everything else is
 plumbing around them.

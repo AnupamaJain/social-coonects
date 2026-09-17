@@ -41,7 +41,7 @@ export function AutopilotForm({
   return (
     <Card className="p-5">
       <div className="flex items-center gap-2">
-        <Sparkles className="size-4 text-brand-500" />
+        <Sparkles className="size-4 text-clay-500" />
         <h2 className="font-semibold tracking-tight">Run Autopilot</h2>
       </div>
 
@@ -103,7 +103,7 @@ export function AutopilotForm({
                     className={cn(
                       "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-all",
                       on
-                        ? "border-brand-500/50 bg-brand-500/10 text-brand-600 dark:text-brand-300"
+                        ? "border-clay-500/50 bg-clay-500/10 text-clay-600 dark:text-clay-300"
                         : "text-muted hover:bg-[var(--bg-subtle)]",
                     )}
                   >
@@ -136,7 +136,7 @@ export function AutopilotForm({
         {!canRunFullWeek ? (
           <p className="text-xs text-muted">
             The {planName} plan generates up to {maxCount} at a time.{" "}
-            <a href="/app/settings/billing" className="text-brand-500 hover:underline">
+            <a href="/app/settings/billing" className="text-clay-500 hover:underline">
               Upgrade
             </a>{" "}
             for a full week.

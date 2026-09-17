@@ -1,476 +1,339 @@
-import Link from "next/link";
-import {
-  ArrowRight, Check, Fingerprint, Gauge, Repeat, Sparkles, Shield, Zap,
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { MarketingNav } from "@/components/marketing/nav";
-import { Logo } from "@/components/marketing/logo";
-import { ButtonLink, Card, Badge } from "@/components/ui";
-import { ScoreRing, SignalBar } from "@/components/score";
+import { DoodleLeft, DoodleRight, Sparkle } from "@/components/marketing/doodles";
+import {
+  AnalyticsMini, CalendarMini, Dial, PostGrid, PreviewMini, SignalStack,
+  Underline, VoiceWave, WeekStrip,
+} from "@/components/marketing/graphics";
+import {
+  AiGrid, AnnouncementBar, AudienceGrid, ChannelGrid, ChannelMarquee, CtaBlock,
+  Faq, Footer, ProofStrip, Section, SectionTitle, ToolRow, VideoFrame, WallOfLove,
+} from "@/components/marketing/sections";
+import { ButtonLink } from "@/components/ui";
 import { PLANS } from "@/lib/billing";
-import { PLATFORMS } from "@/lib/platforms/registry";
+import {
+  AI_FEATURES, ANNOUNCEMENT, AUDIENCES, CHANNELS, FAQ, FOOTER, HERO, PROOF,
+  TESTIMONIALS, TOOLS,
+} from "@/content/landing";
 
-const PILLARS = [
-  {
-    id: "voice",
-    icon: Fingerprint,
-    kicker: "Voice Fingerprint",
-    title: "It writes like you, because it read you first.",
-    body:
-      "Paste in ten posts you're proud of. Postwave measures how you actually write — sentence rhythm, line breaks, the words you reach for, the ones you never use — and conditions every draft on that fingerprint. Then it grades the result and tells you exactly which dial is off.",
-    points: [
-      "Voice Match % on every draft, with a per-signal breakdown",
-      "One click to rewrite a draft in your register",
-      "A banned-phrase list that actually gets enforced",
-    ],
-  },
-  {
-    id: "predict",
-    icon: Gauge,
-    kicker: "Pre-flight Predictor",
-    title: "Know how a post will land before you publish it.",
-    body:
-      "Six signals — hook, readability, call to action, length fit, algorithm risk, voice match — scored per platform in real time. Then the part nobody else does: as your real analytics come in, the weights are refit against your own audience. After a few weeks the score isn't a generic rubric. It's yours.",
-    points: [
-      "Per-platform scoring, not one number for everything",
-      "Flags reach-suppressing patterns before you post",
-      "Retrains on your engagement data automatically",
-    ],
-  },
-  {
-    id: "autopilot",
-    icon: Repeat,
-    kicker: "Autopilot Queue",
-    title: "Your queue is never empty.",
-    body:
-      "Give it a topic and it plans a week with an arc — the opinionated opener, the how-it-works piece, the story, the contrarian take, the short quotable close. Every draft arrives voice-matched and pre-scored. You approve, and it slots into the cadence you already set.",
-    points: [
-      "A week of content from a single topic",
-      "Approve-and-queue: never pick a datetime again",
-      "Drafts land pre-scored, so approval takes seconds",
-    ],
-  },
-];
+/** Set once you've recorded the demo (see marketing/RECORDING-SETUP.md). */
+const DEMO_VIDEO_URL: string | undefined = undefined;
 
-const COMPARISON = [
-  ["Compose once, publish everywhere", true, true],
-  ["Calendar and queue scheduling", true, true],
-  ["AI post generation", true, true],
-  ["Trained on how you specifically write", true, false],
-  ["Performance score before you publish", true, false],
-  ["Predictor that learns from your analytics", true, false],
-  ["Autopilot that keeps the queue full", true, false],
-] as const;
+const TOOL_GRAPHICS: Record<string, React.ReactNode> = {
+  schedule: <CalendarMini />,
+  voice: (
+    <div>
+      <VoiceWave />
+      <div className="mt-4 grid grid-cols-3 gap-3 border-t pt-4 text-center">
+        {[["13.4", "words / sentence"], ["38%", "short lines"], ["0.4", "emoji / post"]].map(([v, l]) => (
+          <div key={l}>
+            <p className="font-serif text-lg font-semibold tabular-nums">{v}</p>
+            <p className="text-[10px] text-muted">{l}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  ),
+  score: (
+    <div className="flex flex-col items-center gap-6">
+      <Dial score={87} size={150} caption="Predicted" />
+      <SignalStack
+        signals={[
+          { label: "Hook", value: 91 },
+          { label: "Voice match", value: 89 },
+          { label: "Length fit", value: 96 },
+          { label: "Algorithm risk", value: 100 },
+        ]}
+      />
+    </div>
+  ),
+  autopilot: (
+    <div>
+      <WeekStrip />
+      <p className="mt-4 border-t pt-4 text-center font-mono text-[10px] uppercase tracking-wider text-muted">
+        5 approved · 3 open · 0 published without you
+      </p>
+    </div>
+  ),
+  preview: <PreviewMini />,
+  analytics: (
+    <div>
+      <AnalyticsMini />
+      <div className="mt-3 flex justify-between border-t pt-3 font-mono text-[10px] uppercase tracking-wider text-muted">
+        <span>reach · 10 weeks</span>
+        <span className="text-clay-500">+410%</span>
+      </div>
+    </div>
+  ),
+};
 
 export default async function LandingPage() {
   const user = await getCurrentUser();
 
   return (
     <div className="min-h-dvh">
+      <AnnouncementBar {...ANNOUNCEMENT} />
       <MarketingNav signedIn={Boolean(user)} />
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Hero                                                              */}
-      {/* ---------------------------------------------------------------- */}
+      {/* ============================================================== */}
+      {/* Hero                                                            */}
+      {/* ============================================================== */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 grid-bg" aria-hidden />
-        <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-brand-500/15 blur-[120px]" aria-hidden />
+        <DoodleLeft className="pointer-events-none absolute left-2 top-24 hidden w-32 opacity-90 lg:block xl:left-16" />
+        <DoodleRight className="pointer-events-none absolute right-2 top-16 hidden w-32 opacity-90 lg:block xl:right-16" />
 
-        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-16 sm:px-6 sm:pt-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="rise">
-              <Badge tone="brand" className="mb-6">
-                <Sparkles className="size-3" />
-                Voice Fingerprint · Pre-flight scoring · Autopilot
-              </Badge>
-            </div>
-
-            <h1
-              className="rise text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl"
-              style={{ animationDelay: "60ms" }}
-            >
-              Every scheduler helps you post more.
-              <br />
-              <span className="bg-gradient-to-br from-brand-500 to-brand-700 bg-clip-text text-transparent">
-                This one tells you what to post.
-              </span>
-            </h1>
-
-            <p
-              className="rise mx-auto mt-6 max-w-xl text-pretty text-lg text-muted"
-              style={{ animationDelay: "140ms" }}
-            >
-              Postwave learns how you actually write, scores every draft against
-              your own audience data before you publish, and keeps a week of
-              approved content sitting in the queue.
-            </p>
-
-            <div
-              className="rise mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
-              style={{ animationDelay: "220ms" }}
-            >
-              <ButtonLink href="/signup" size="lg" className="w-full sm:w-auto">
-                Start free <ArrowRight className="size-4" />
-              </ButtonLink>
-              <ButtonLink href="/login" variant="outline" size="lg" className="w-full sm:w-auto">
-                Log in
-              </ButtonLink>
-            </div>
-
-            <p className="rise mt-4 text-sm text-muted" style={{ animationDelay: "300ms" }}>
-              No card required · Works offline in sandbox mode · Set up in 2 minutes
-            </p>
-          </div>
-
-          {/* Product proof: the score panel, which is the actual differentiator */}
-          <div className="rise mt-16" style={{ animationDelay: "380ms" }}>
-            <Card className="mx-auto max-w-4xl overflow-hidden p-0 shadow-2xl shadow-brand-950/5">
-              <div className="flex items-center gap-2 border-b bg-[var(--bg-subtle)] px-4 py-2.5">
-                <span className="size-2.5 rounded-full bg-red-400" />
-                <span className="size-2.5 rounded-full bg-amber-400" />
-                <span className="size-2.5 rounded-full bg-emerald-400" />
-                <span className="ml-2 text-xs text-muted">Composer · LinkedIn</span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-0 md:grid-cols-[1.35fr_1fr]">
-                <div className="border-b p-6 md:border-b-0 md:border-r">
-                  <div className="flex items-center gap-2 text-xs text-muted">
-                    <span className="grid size-6 place-items-center rounded bg-[#0a66c2] text-[10px] font-bold text-white">in</span>
-                    Draft
-                  </div>
-                  <div className="mt-4 space-y-3 text-[15px] leading-relaxed">
-                    <p className="font-medium">
-                      We cut our posting volume by 60% and reach went up.
-                    </p>
-                    <p className="text-muted">
-                      Turns out the algorithm was never the problem. We were
-                      publishing four mediocre posts a week because the calendar
-                      said to.
-                    </p>
-                    <p className="text-muted">
-                      Now we publish two. Both get scored before they go out.
-                    </p>
-                    <p className="text-muted">What would you drop first?</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4 bg-[var(--bg-subtle)] p-6">
-                  <div className="flex items-center justify-between">
-                    <ScoreRing score={87} size={72} label="Predicted" sublabel="Strong for LinkedIn" />
-                    <Badge tone="success">Ready</Badge>
-                  </div>
-                  <div className="space-y-3">
-                    <SignalBar label="Hook" score={91} />
-                    <SignalBar label="Voice match" score={84} />
-                    <SignalBar label="Length fit" score={96} />
-                    <SignalBar label="Algorithm risk" score={100} detail="No reach-suppressing patterns" />
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* Platforms                                                         */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="border-y bg-[var(--bg-subtle)] py-10">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <p className="text-center text-xs font-medium uppercase tracking-widest text-muted">
-            Compose once. Publish everywhere.
+        <div className="mx-auto max-w-4xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
+          <p className="rise font-mono text-xs uppercase tracking-[0.22em] text-muted">
+            {HERO.eyebrow}
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            {Object.values(PLATFORMS).map((p) => (
-              <span
-                key={p.id}
-                className="surface inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
-              >
-                <span className={`size-2.5 rounded-full ${p.accent}`} />
-                {p.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Three pillars                                                     */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Three things no other scheduler does together
-          </h2>
-          <p className="mt-4 text-muted">
-            Buffer, Hootsuite and the rest are distribution. Postwave is
-            judgement — what to say, in whose voice, and whether it will work.
-          </p>
-        </div>
-
-        <div className="mt-16 space-y-20">
-          {PILLARS.map((pillar, i) => (
-            <div
-              key={pillar.id}
-              id={pillar.id}
-              className="grid grid-cols-1 scroll-mt-24 items-center gap-10 md:grid-cols-2"
-            >
-              <div className={i % 2 ? "md:order-2" : ""}>
-                <div className="inline-flex items-center gap-2 rounded-full border bg-brand-500/8 px-3 py-1 text-xs font-medium text-brand-500">
-                  <pillar.icon className="size-3.5" />
-                  {pillar.kicker}
-                </div>
-                <h3 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                  {pillar.title}
-                </h3>
-                <p className="mt-4 text-pretty text-muted">{pillar.body}</p>
-                <ul className="mt-6 space-y-2.5">
-                  {pillar.points.map((point) => (
-                    <li key={point} className="flex items-start gap-2.5 text-sm">
-                      <Check className="mt-0.5 size-4 shrink-0 text-brand-500" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className={i % 2 ? "md:order-1" : ""}>
-                <PillarVisual id={pillar.id} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* Comparison                                                        */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="border-y bg-[var(--bg-subtle)] py-20">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight">
-            Where the difference actually is
-          </h2>
-          <Card className="mt-10 overflow-hidden p-0">
-            <div className="grid grid-cols-[1fr_88px_88px] items-center gap-2 border-b px-5 py-3 text-xs font-medium uppercase tracking-wide text-muted">
-              <span />
-              <span className="text-center">Postwave</span>
-              <span className="text-center">Typical</span>
-            </div>
-            {COMPARISON.map(([label, mine, theirs]) => (
-              <div
-                key={label}
-                className="grid grid-cols-[1fr_88px_88px] items-center gap-2 border-b px-5 py-3.5 text-sm last:border-b-0"
-              >
-                <span>{label}</span>
-                <span className="flex justify-center">
-                  {mine ? (
-                    <Check className="size-4 text-emerald-500" />
-                  ) : (
-                    <span className="text-ink-400">—</span>
-                  )}
-                </span>
-                <span className="flex justify-center">
-                  {theirs ? (
-                    <Check className="size-4 text-ink-400" />
-                  ) : (
-                    <span className="text-ink-400">—</span>
-                  )}
-                </span>
-              </div>
-            ))}
-          </Card>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* Pricing                                                           */}
-      {/* ---------------------------------------------------------------- */}
-      <section id="pricing" className="mx-auto max-w-5xl scroll-mt-24 px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Simple pricing
-          </h2>
-          <p className="mt-4 text-muted">
-            Start free. Upgrade when the queue is paying for itself.
-          </p>
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-          {Object.values(PLANS).map((plan) => {
-            const isPro = plan.id === "pro";
-            return (
-              <Card
-                key={plan.id}
-                className={`relative p-7 ${isPro ? "border-brand-500/40 shadow-lg shadow-brand-600/10" : ""}`}
-              >
-                {isPro ? (
-                  <Badge tone="brand" className="absolute -top-2.5 right-6">
-                    Most popular
-                  </Badge>
-                ) : null}
-                <h3 className="font-semibold">{plan.name}</h3>
-                <p className="mt-3 flex items-baseline gap-1">
-                  <span className="text-4xl font-semibold tracking-tight">${plan.price}</span>
-                  <span className="text-sm text-muted">/month</span>
-                </p>
-                <ButtonLink
-                  href="/signup"
-                  variant={isPro ? "primary" : "outline"}
-                  className="mt-6 w-full"
-                >
-                  {isPro ? "Start free, upgrade anytime" : "Start free"}
-                </ButtonLink>
-                <ul className="mt-7 space-y-3">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5 text-sm">
-                      <Check className="mt-0.5 size-4 shrink-0 text-brand-500" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted">
-          <span className="inline-flex items-center gap-2">
-            <Shield className="size-4" /> Your tokens stay in your database
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <Zap className="size-4" /> Cancel in one click
-          </span>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* CTA + footer                                                      */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="border-t bg-[var(--bg-subtle)]">
-        <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-          <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-            Stop guessing what to post.
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-muted">
-            Train your fingerprint in five minutes. Score your next post before
-            it goes out.
-          </p>
-          <ButtonLink href="/signup" size="lg" className="mt-8">
-            Start free <ArrowRight className="size-4" />
-          </ButtonLink>
-        </div>
-      </section>
-
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:px-6">
-          <Logo />
-          <p>© {new Date().getFullYear()} Postwave</p>
-          <div className="flex gap-6">
-            <Link href="/login" className="hover:text-[var(--fg)]">Log in</Link>
-            <Link href="/signup" className="hover:text-[var(--fg)]">Sign up</Link>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-/** Small illustrative panels for each pillar — real component, fake data. */
-function PillarVisual({ id }: { id: string }) {
-  if (id === "voice") {
-    return (
-      <Card className="p-6">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted">
-          Voice fingerprint
-        </p>
-        <div className="mt-4 flex items-center gap-4">
-          <ScoreRing score={84} size={80} label="Voice match" sublabel="Sounds like you" />
-        </div>
-        <div className="mt-5 space-y-3">
-          <SignalBar label="Sentence rhythm" score={92} detail="13.1 words/sentence vs your 13.4" />
-          <SignalBar label="Vocabulary" score={71} detail="24% of content words are ones you use" />
-          <SignalBar label="Banned phrases" score={100} detail="Clean" />
-        </div>
-      </Card>
-    );
-  }
-
-  if (id === "predict") {
-    return (
-      <Card className="p-6">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted">
-          What your audience rewards
-        </p>
-        <p className="mt-1 text-sm text-muted">Refit from 43 published posts</p>
-        <div className="mt-5 space-y-3.5">
-          {[
-            ["Hook strength", 38, "+8"],
-            ["Length fit", 22, "+6"],
-            ["Voice match", 18, "+6"],
-            ["Call to action", 11, "-1"],
-            ["Readability", 7, "-7"],
-            ["Algorithm safety", 4, "-12"],
-          ].map(([label, share, delta]) => (
-            <div key={label as string} className="flex items-center gap-3">
-              <span className="w-32 shrink-0 text-sm">{label}</span>
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--bg-subtle)] border">
-                <div
-                  className="h-full rounded-full bg-brand-500"
-                  style={{ width: `${(share as number) * 2.4}%` }}
-                />
-              </div>
-              <span
-                className={`w-10 text-right text-xs tabular-nums ${
-                  (delta as string).startsWith("+") ? "text-emerald-500" : "text-muted"
-                }`}
-              >
-                {delta}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="p-6">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted">
-        This week&apos;s queue
-      </p>
-      <div className="mt-4 space-y-2.5">
-        {[
-          ["Mon 9:15", "The 60% volume cut", 87, "approved"],
-          ["Tue 16:30", "How the scoring actually works", 79, "approved"],
-          ["Wed 9:15", "What we got wrong in Q1", 84, "pending"],
-          ["Thu 16:30", "Against the daily-posting advice", 91, "pending"],
-          ["Fri 9:15", "One line that changed the funnel", 73, "pending"],
-        ].map(([slot, title, score, state]) => (
-          <div
-            key={slot as string}
-            className="flex items-center gap-3 rounded-lg border bg-[var(--bg-subtle)] px-3 py-2.5"
+          <h1
+            className="rise mt-6 font-serif text-[2.7rem] font-semibold leading-[1.02] tracking-tight sm:text-7xl"
+            style={{ animationDelay: "60ms" }}
           >
-            <span className="w-16 shrink-0 font-mono text-xs text-muted">{slot}</span>
-            <span className="min-w-0 flex-1 truncate text-sm">{title}</span>
-            <span
-              className="shrink-0 text-xs font-semibold tabular-nums"
-              style={{
-                color:
-                  (score as number) >= 80
-                    ? "var(--color-signal-strong)"
-                    : "var(--color-signal-good)",
-              }}
-            >
-              {score}
+            {HERO.headline[0]}
+            <br />
+            <span className="relative inline-block bg-gradient-to-r from-clay-600 via-clay-500 to-clay-400 bg-clip-text text-transparent">
+              {HERO.headline[1]}
+              <Underline />
             </span>
-            {state === "approved" ? (
-              <Check className="size-3.5 shrink-0 text-emerald-500" />
-            ) : (
-              <span className="size-3.5 shrink-0 rounded-full border-2 border-dashed" />
-            )}
+          </h1>
+
+          <p
+            className="rise mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-muted sm:text-xl"
+            style={{ animationDelay: "140ms" }}
+          >
+            {HERO.sub}
+          </p>
+
+          <p className="rise mt-6 text-sm text-muted" style={{ animationDelay: "200ms" }}>
+            {HERO.modelsNote.split(",")[0]}:{" "}
+            {HERO.models.map((m, i) => (
+              <span key={m}>
+                <span className="font-medium text-[var(--fg)]">{m}</span>
+                {i < HERO.models.length - 1 ? " · " : ""}
+              </span>
+            ))}
+          </p>
+
+          <div className="rise mt-10" style={{ animationDelay: "260ms" }}>
+            <ChannelMarquee channels={CHANNELS} />
           </div>
-        ))}
-      </div>
-    </Card>
+
+          <div className="rise mt-10 flex flex-col items-center gap-4" style={{ animationDelay: "320ms" }}>
+            <ButtonLink href="/signup" size="lg">
+              Start for $0 <ArrowRight className="size-4" />
+            </ButtonLink>
+
+            <div className="mt-2 grid w-full max-w-lg grid-cols-1 gap-3 sm:grid-cols-2">
+              {HERO.paths.map((p) => (
+                <a
+                  key={p.href}
+                  href={p.href}
+                  className="surface group rounded-xl px-5 py-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink-900/5"
+                >
+                  <span className="flex items-center justify-between font-medium">
+                    {p.label}
+                    <ArrowRight className="size-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-clay-500" />
+                  </span>
+                  <span className="mt-1 block text-xs text-muted">{p.sub}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================== */}
+      {/* Proof strip                                                     */}
+      {/* ============================================================== */}
+      <section className="border-y bg-[var(--bg-subtle)] py-14">
+        <p className="mb-8 text-center font-mono text-xs uppercase tracking-[0.22em] text-muted">
+          What it does, in numbers
+        </p>
+        <ProofStrip items={PROOF} />
+      </section>
+
+      {/* ============================================================== */}
+      {/* Story: 180 posts                                                */}
+      {/* ============================================================== */}
+      <Section>
+        <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-[1fr_1.1fr]">
+          <div>
+            <SectionTitle sub="They found out which six afterwards. Sixfold tells you before.">
+              Last year one team published 180 posts.{" "}
+              <span className="relative inline-block">
+                Six worked.
+                <Underline />
+              </span>
+            </SectionTitle>
+          </div>
+          <PostGrid />
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Who is it for                                                   */}
+      {/* ============================================================== */}
+      <Section tone="subtle">
+        <SectionTitle center>Who is Sixfold for?</SectionTitle>
+        <div className="mt-12">
+          <AudienceGrid items={AUDIENCES} />
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Video                                                           */}
+      {/* ============================================================== */}
+      <Section>
+        <SectionTitle center sub="Ninety seconds: paste a post, watch the score, fix it, queue it.">
+          See Sixfold in action
+        </SectionTitle>
+        <div className="mt-12">
+          <VideoFrame
+            url={DEMO_VIDEO_URL}
+            poster={
+              <div className="flex items-center gap-10">
+                <Dial score={28} size={120} caption="AI draft" />
+                <ArrowRight className="size-8 text-muted" />
+                <Dial score={87} size={120} caption="Your voice" />
+              </div>
+            }
+          />
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* AI                                                              */}
+      {/* ============================================================== */}
+      <Section id="voice" tone="subtle">
+        <div className="flex items-start gap-3">
+          <Sparkle className="mt-2 size-6 shrink-0" />
+          <SectionTitle sub="It read you first. Everything it writes is conditioned on how you actually write.">
+            Power your content with AI that sounds like you
+          </SectionTitle>
+        </div>
+        <div className="mt-12">
+          <AiGrid items={AI_FEATURES} />
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Tools                                                           */}
+      {/* ============================================================== */}
+      <Section id="predict">
+        <SectionTitle center>Every tool for social growth, in one place</SectionTitle>
+        <div className="mt-20 space-y-24">
+          {TOOLS.map((t, i) => (
+            <div key={t.key} id={t.key === "autopilot" ? "autopilot" : undefined}>
+              <ToolRow
+                kicker={t.kicker}
+                title={t.title}
+                body={t.body}
+                graphic={TOOL_GRAPHICS[t.key]}
+                flip={i % 2 === 1}
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Channels                                                        */}
+      {/* ============================================================== */}
+      <Section id="channels" tone="subtle">
+        <SectionTitle center sub="One composer. Each channel gets its own version, its own preview, its own score.">
+          Every channel that matters
+        </SectionTitle>
+        <div className="mt-12">
+          <ChannelGrid channels={CHANNELS} />
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Mid CTA                                                         */}
+      {/* ============================================================== */}
+      <Section>
+        <CtaBlock
+          title="Ready to get started?"
+          sub="Train your fingerprint in five minutes. Score your next post before it goes out."
+        />
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Wall of love — renders only with real quotes                    */}
+      {/* ============================================================== */}
+      {TESTIMONIALS.length > 0 ? (
+        <Section tone="subtle">
+          <SectionTitle center>Wall of love</SectionTitle>
+          <div className="mt-12">
+            <WallOfLove items={TESTIMONIALS} />
+          </div>
+        </Section>
+      ) : null}
+
+      {/* ============================================================== */}
+      {/* Pricing                                                         */}
+      {/* ============================================================== */}
+      <Section id="pricing" tone="subtle">
+        <SectionTitle center sub="Start free. Upgrade when the queue is paying for itself.">
+          Two plans
+        </SectionTitle>
+        <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-px overflow-hidden rounded-2xl border bg-[var(--border)] sm:grid-cols-2">
+          {Object.values(PLANS).map((plan) => (
+            <div key={plan.id} className="bg-[var(--panel)] p-8">
+              <div className="flex items-baseline justify-between">
+                <h3 className="font-serif text-xl font-semibold">{plan.name}</h3>
+                <p className="font-serif text-4xl font-semibold tabular-nums">
+                  ${plan.price}
+                  <span className="ml-1 text-sm font-normal text-muted">/mo</span>
+                </p>
+              </div>
+              <ul className="mt-7 space-y-2.5">
+                {plan.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm">
+                    <Check className="mt-0.5 size-4 shrink-0 text-clay-500" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <ButtonLink
+                href="/signup"
+                variant={plan.id === "pro" ? "primary" : "outline"}
+                className="mt-8 w-full"
+              >
+                Start for $0
+              </ButtonLink>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* FAQ                                                             */}
+      {/* ============================================================== */}
+      <Section id="faq">
+        <SectionTitle center>
+          Frequently asked{" "}
+          <span className="relative inline-block">
+            questions
+            <Underline />
+          </span>
+        </SectionTitle>
+        <div className="mt-12">
+          <Faq items={FAQ} />
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* Final CTA                                                       */}
+      {/* ============================================================== */}
+      <Section tone="subtle">
+        <CtaBlock title="Find your six." sub="Post less. Land harder." doodle={false} />
+      </Section>
+
+      <Footer {...FOOTER} />
+    </div>
   );
 }

@@ -135,7 +135,7 @@ export default async function AutopilotPage() {
                   ["You approve", "Nothing publishes without a human. Approved posts fill your existing cadence."],
                 ].map(([title, body], i) => (
                   <li key={title} className="flex gap-3">
-                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-600 text-xs font-semibold text-white">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-clay-600 text-xs font-semibold text-white">
                       {i + 1}
                     </span>
                     <div>

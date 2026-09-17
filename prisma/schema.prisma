@@ -1,4 +1,4 @@
-// Postwave schema.
+// Sixfold schema.
 // NOTE: enum-ish columns and JSON blobs are stored as String so the exact same
 // schema runs on SQLite (local dev) and Postgres (production) with no edits
 // beyond the `provider` line, which scripts/db-provider.mjs flips for you.

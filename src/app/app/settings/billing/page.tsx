@@ -56,7 +56,7 @@ export default async function BillingPage({
               return (
                 <Card
                   key={p.id}
-                  className={`p-5 ${current ? "border-brand-500/40" : ""}`}
+                  className={`p-5 ${current ? "border-clay-500/40" : ""}`}
                 >
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold">{p.name}</h2>
@@ -69,7 +69,7 @@ export default async function BillingPage({
                   <ul className="mt-5 space-y-2">
                     {p.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm">
-                        <Check className="mt-0.5 size-4 shrink-0 text-brand-500" />
+                        <Check className="mt-0.5 size-4 shrink-0 text-clay-500" />
                         {f}
                       </li>
                     ))}

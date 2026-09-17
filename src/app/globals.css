@@ -3,54 +3,61 @@
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Editorial display face for headlines. Named --font-serif rather than
+     --font-display: the latter collides with a real CSS property and the
+     utility silently never gets generated. */
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
-  --color-ink-50: #f7f7f8;
-  --color-ink-100: #ededf0;
-  --color-ink-200: #d9d9e0;
-  --color-ink-300: #b8b8c4;
-  --color-ink-400: #8e8ea0;
-  --color-ink-500: #6b6b80;
-  --color-ink-600: #52525f;
-  --color-ink-700: #3f3f4a;
-  --color-ink-800: #26262e;
-  --color-ink-900: #16161c;
-  --color-ink-950: #0c0c10;
+  /* Warm neutral ramp — paper and ink, never cool grey. */
+  --color-ink-50: #faf8f5;
+  --color-ink-100: #f2eee7;
+  --color-ink-200: #e4ded3;
+  --color-ink-300: #cfc6b8;
+  --color-ink-400: #a79c8b;
+  --color-ink-500: #7d7365;
+  --color-ink-600: #5c534a;
+  --color-ink-700: #423b34;
+  --color-ink-800: #2a2521;
+  --color-ink-900: #1a1714;
+  --color-ink-950: #100e0c;
 
-  --color-brand-50: #f3f1ff;
-  --color-brand-100: #e9e5ff;
-  --color-brand-200: #d5cdff;
-  --color-brand-300: #b8a8ff;
-  --color-brand-400: #9878ff;
-  --color-brand-500: #7c4dff;
-  --color-brand-600: #6d28d9;
-  --color-brand-700: #5b21b6;
-  --color-brand-800: #4c1d95;
-  --color-brand-900: #2e1065;
+  /* Single accent: clay. Used sparingly — highlights, never large fills. */
+  --color-clay-50: #fdf5f0;
+  --color-clay-100: #fae7dc;
+  --color-clay-200: #f3cbb4;
+  --color-clay-300: #e9a781;
+  --color-clay-400: #dd7f4d;
+  --color-clay-500: #c85f2a;
+  --color-clay-600: #a84a1f;
+  --color-clay-700: #86391a;
+  --color-clay-800: #632a15;
+  --color-clay-900: #431d10;
 
-  --color-signal-strong: #10b981;
-  --color-signal-good: #84cc16;
-  --color-signal-fair: #f59e0b;
-  --color-signal-weak: #ef4444;
+  /* Score semantics, desaturated so they read as print, not traffic lights. */
+  --color-signal-strong: #3f7a4f;
+  --color-signal-good: #7a8f3a;
+  --color-signal-fair: #c08a2e;
+  --color-signal-weak: #b4472f;
 }
 
 :root {
-  --bg: #ffffff;
-  --bg-subtle: #fafafa;
+  --bg: #faf8f5;
+  --bg-subtle: #f2eee7;
   --panel: #ffffff;
-  --border: #e8e8ec;
-  --fg: #16161c;
-  --fg-muted: #6b6b80;
-  --ring: #7c4dff;
+  --border: #e4ded3;
+  --fg: #1a1714;
+  --fg-muted: #7d7365;
+  --ring: #c85f2a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0c0c10;
-    --bg-subtle: #101015;
-    --panel: #16161c;
-    --border: #26262e;
-    --fg: #f2f2f5;
-    --fg-muted: #8e8ea0;
+    --bg: #100e0c;
+    --bg-subtle: #1a1714;
+    --panel: #1f1b17;
+    --border: #322c26;
+    --fg: #f5f1ea;
+    --fg-muted: #a79c8b;
   }
 }
 
@@ -68,8 +75,8 @@
     -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--color-brand-500);
-    color: white;
+    background: var(--color-clay-500);
+    color: #fff;
   }
   :focus-visible {
     outline: 2px solid var(--ring);
@@ -86,7 +93,6 @@
   color: var(--fg-muted);
 }
 
-/* Landing page motion, disabled for anyone who asked us not to move things. */
 @keyframes rise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: none; }
@@ -94,65 +100,94 @@
 .rise {
   animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes draw {
+  from { stroke-dashoffset: var(--dash, 1000); }
+  to { stroke-dashoffset: 0; }
+}
+.draw {
+  stroke-dasharray: var(--dash, 1000);
+  animation: draw 1.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-.marquee { animation: marquee 38s linear infinite; }
+.marquee { animation: marquee 40s linear infinite; }
+.marquee:hover { animation-play-state: paused; }
 
-@media (prefers-reduced-motion: reduce) {
-  .rise, .marquee { animation: none !important; }
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 
-.grid-bg {
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--border) 65%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--border) 65%, transparent) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+@media (prefers-reduced-motion: reduce) {
+  .rise, .draw, .marquee { animation: none !important; stroke-dashoffset: 0 !important; }
+}
+
+/* Faint ruled paper, the texture of a notebook rather than a dashboard. */
+.paper {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 31px,
+    color-mix(in srgb, var(--border) 55%, transparent) 31px,
+    color-mix(in srgb, var(--border) 55%, transparent) 32px
+  );
+}
+
+.rule {
+  background-image: linear-gradient(
+    to right,
+    var(--border) 0 50%,
+    transparent 50% 100%
+  );
+  background-size: 6px 1px;
 }
 
 /* ---------------------------------------------------------------------------
-   Data-viz tokens. Categorical slots are the validated default palette:
-   all six pass the lightness band, chroma floor, adjacent CVD separation and
-   normal-vision floor in both modes. Three light-mode slots sit under 3:1 on
-   the light surface, so every chart using them ships visible direct labels.
+   Data-viz tokens. The categorical order leads with clay-adjacent orange and
+   contains no blue. Re-validated in both modes: worst adjacent CVD ΔE 9.1
+   light / 8.4 dark, normal-vision 22.9 / 19.7 — all above the gates.
+   Three light-mode slots sit under 3:1 on the light surface, so every chart
+   using them ships visible direct labels.
    --------------------------------------------------------------------------- */
 .viz-root {
   --viz-surface: var(--panel);
-  --viz-grid: color-mix(in srgb, var(--border) 80%, transparent);
+  --viz-grid: color-mix(in srgb, var(--border) 85%, transparent);
   --viz-text: var(--fg);
   --viz-text-muted: var(--fg-muted);
 
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --series-4: #eda100;
+  --series-1: #eb6834;
+  --series-2: #1baf7a;
+  --series-3: #eda100;
+  --series-4: #4a3aa7;
   --series-5: #e87ba4;
   --series-6: #008300;
 
-  /* Single-hue sequential, used where the encoding is magnitude not identity. */
-  --seq: #6d28d9;
+  /* Single-hue sequential, for magnitude rather than identity. */
+  --seq: #a84a1f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) .viz-root {
-    --series-1: #3987e5;
-    --series-2: #d95926;
-    --series-3: #199e70;
-    --series-4: #c98500;
+    --series-1: #d95926;
+    --series-2: #199e70;
+    --series-3: #c98500;
+    --series-4: #9085e9;
     --series-5: #d55181;
     --series-6: #008300;
-    --seq: #9878ff;
+    --seq: #dd7f4d;
   }
 }
 
 :root[data-theme="dark"] .viz-root {
-  --series-1: #3987e5;
-  --series-2: #d95926;
-  --series-3: #199e70;
-  --series-4: #c98500;
+  --series-1: #d95926;
+  --series-2: #199e70;
+  --series-3: #c98500;
+  --series-4: #9085e9;
   --series-5: #d55181;
   --series-6: #008300;
-  --seq: #9878ff;
+  --seq: #dd7f4d;
 }

@@ -130,14 +130,14 @@ export default async function DashboardPage() {
                     className={`group rounded-lg border p-4 transition-colors ${
                       step.done
                         ? "bg-emerald-500/5 border-emerald-500/25"
-                        : "hover:border-brand-500/50 hover:bg-[var(--bg-subtle)]"
+                        : "hover:border-clay-500/50 hover:bg-[var(--bg-subtle)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       {step.done ? (
                         <Check className="size-4 text-emerald-500" />
                       ) : (
-                        <step.icon className="size-4 text-brand-500" />
+                        <step.icon className="size-4 text-clay-500" />
                       )}
                       <span className="text-sm font-medium">{step.label}</span>
                     </div>
@@ -187,7 +187,7 @@ export default async function DashboardPage() {
                 <h2 className="font-semibold tracking-tight">Coming up</h2>
                 <Link
                   href="/app/calendar"
-                  className="inline-flex items-center gap-1 text-sm text-brand-500 hover:underline"
+                  className="inline-flex items-center gap-1 text-sm text-clay-500 hover:underline"
                 >
                   Calendar <ArrowRight className="size-3.5" />
                 </Link>
@@ -252,7 +252,7 @@ export default async function DashboardPage() {
             {/* Predictor status — the USP, surfaced */}
             <Card className="p-5">
               <div className="flex items-center gap-2">
-                <Gauge className="size-4 text-brand-500" />
+                <Gauge className="size-4 text-clay-500" />
                 <h2 className="font-semibold tracking-tight">Your predictor</h2>
               </div>
 

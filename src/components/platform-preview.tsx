@@ -43,7 +43,7 @@ function Body({
     <div className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">
       {shown.split(/(#[\p{L}\d_]+|https?:\/\/\S+|@[\w.]+)/gu).map((part, i) =>
         /^#|^https?:\/\/|^@/.test(part) ? (
-          <span key={i} className="text-brand-500">{part}</span>
+          <span key={i} className="text-clay-500">{part}</span>
         ) : (
           <span key={i}>{part}</span>
         ),

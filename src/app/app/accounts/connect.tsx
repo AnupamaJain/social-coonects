@@ -38,7 +38,7 @@ export function ConnectCard({
           <a
             href={atLimit ? undefined : `/api/oauth/${platform.id}/start`}
             aria-disabled={atLimit}
-            className={`inline-flex h-8 flex-1 items-center justify-center gap-2 rounded-lg bg-brand-600 px-3 text-sm font-medium text-white transition-colors hover:bg-brand-500 ${
+            className={`inline-flex h-8 flex-1 items-center justify-center gap-2 rounded-lg bg-clay-600 px-3 text-sm font-medium text-white transition-colors hover:bg-clay-500 ${
               atLimit ? "pointer-events-none opacity-50" : ""
             }`}
           >

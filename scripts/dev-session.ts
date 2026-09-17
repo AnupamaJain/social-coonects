@@ -21,7 +21,7 @@ async function main() {
   const { db } = await import("../src/lib/db");
 
   try {
-    const email = process.argv[2] ?? "demo@postwave.app";
+    const email = process.argv[2] ?? "demo@sixfold.app";
     const user = await db.user.findUnique({ where: { email } });
     if (!user) throw new Error(`No user ${email}. Run: npm run db:seed`);
 

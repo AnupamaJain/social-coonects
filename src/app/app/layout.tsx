@@ -59,7 +59,7 @@ export default async function AppLayout({
                 <Badge tone="brand">{pendingCount}</Badge>
               ) : null}
               {item.href === "/app/accounts" && accountCount === 0 ? (
-                <span className="size-1.5 rounded-full bg-brand-500" />
+                <span className="size-1.5 rounded-full bg-clay-500" />
               ) : null}
             </NavLink>
           ))}

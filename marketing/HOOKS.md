@@ -54,7 +54,7 @@ Learn these so you stop reaching for them:
 | "Hey guys, in this video…" | Two seconds of nothing. They're gone. |
 | "Let me show you our new tool" | Announces an ad. |
 | "Content marketing is more important than ever" | Says nothing. Could open any video. |
-| "Introducing Postwave" | Nobody has any reason to care yet. |
+| "Introducing Sixfold" | Nobody has any reason to care yet. |
 | "Are you struggling with social media?" | Infomercial cadence. |
 
 ---

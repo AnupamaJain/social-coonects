@@ -196,7 +196,7 @@ export default async function AnalyticsPage({
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
               <Card className="p-5">
                 <div className="flex items-center gap-2">
-                  <Gauge className="size-4 text-brand-500" />
+                  <Gauge className="size-4 text-clay-500" />
                   <h2 className="font-semibold tracking-tight">Is the score working?</h2>
                 </div>
                 <p className="mt-1 text-sm text-muted">

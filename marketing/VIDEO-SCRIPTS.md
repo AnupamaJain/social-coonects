@@ -27,7 +27,7 @@ cringe of AI-written LinkedIn slop, and the video punishes it on screen.
 | 0:12–0:16 | Cursor moves to **Make it sound like me**. Click. | `Make it sound like me` | "So I trained it on ten posts I'd actually written." |
 | 0:16–0:21 | Text rewrites. Score climbs **28 → 87**. **1× speed. Do not cut this.** | `87 / 100` `Voice match 89%` | "Same idea. My words." |
 | 0:21–0:25 | Split-screen: before and after, side by side | `Before` / `After` | "One of these sounds like a person." |
-| 0:25–0:27 | Logo, one second | `Postwave` | — |
+| 0:25–0:27 | Logo, one second | `Sixfold` | — |
 
 **Why it works:** the before/after is unfakeable and takes zero explanation.
 The viewer does the judging themselves.
@@ -47,7 +47,7 @@ The category-attack video. Names the competitor set without naming a company.
 | 0:07–0:13 | Composer, typing a real post. Score updates live as the words land. | `71` → `78` → `84` | "This one scores it while you write. Hook. Readability. Length for the platform. Whether the algorithm will bury it." |
 | 0:13–0:19 | Cut to the analytics calibration chart. Dots, dashed line. | `Is the score working?` | "And it checks its own work. Every dot is a post it predicted, against how it actually did." |
 | 0:19–0:24 | Cut to "What your audience rewards", bars with green deltas | `Hook strength 34% +4` | "After a few weeks it stops guessing and starts learning what *your* audience rewards." |
-| 0:24–0:26 | Logo | `Postwave` | — |
+| 0:24–0:26 | Logo | `Sixfold` | — |
 
 **Why it works:** shipping the chart that could prove you wrong reads as
 confidence. That's the whole emotional beat.
@@ -66,7 +66,7 @@ confidence. That's the whole emotional beat.
 | 0:09–0:13 | Add seven hashtags. Meter drops further. | `7 hashtags — LinkedIn wants at most 3` | "Three. Hashtag soup. That's a 2019 move." |
 | 0:13–0:17 | Delete all three. Score climbs — but only to **40**. Hold on it. | `28` → `40` | "Fix all three and it still only scores forty." |
 | 0:17–0:22 | Cut to the Hook row, still red at 5. Then rewrite the first line. Score jumps. | `Hook 5` → `Hook 81` · `82` | "Because none of those were the real problem. The first line was." |
-| 0:22–0:24 | Logo | `Postwave` | — |
+| 0:22–0:24 | Logo | `Sixfold` | — |
 
 **Why it works:** it's genuinely useful even to someone who never installs
 anything, and the twist at 0:17 is what makes it shareable — the video sets up
@@ -91,7 +91,7 @@ with the screen recording cut in.
 | 0:08–0:14 | Screen: the queue filling with pre-scored drafts | `Autopilot · 5 drafts awaiting approval` | "Now there's a queue. It writes a week ahead, in my voice, and scores everything before I see it." |
 | 0:14–0:19 | Approving a draft with one click. It lands in a slot. | `Approved → Tue 16:30` | "I approve the good ones. The weak ones just don't go out." |
 | 0:19–0:23 | Talking head | — | "Turns out we were never short on ideas. We were short on the nerve to publish less." |
-| 0:23–0:25 | Logo | `Postwave` | — |
+| 0:23–0:25 | Logo | `Sixfold` | — |
 
 **Why it works:** the contrarian claim ("we posted less and grew") is the hook.
 The product is almost incidental, which is why it doesn't read as an ad.
@@ -109,7 +109,7 @@ Interactive framing. Highest comment rate of the five — people argue in replie
 | 0:08–0:12 | Reveal the Voice Match panel on each | `A — 91%` `B — 88%` | "Three points apart." |
 | 0:12–0:17 | Scroll the fingerprint readout: sentence length, vocabulary | `13.4 words/sentence` `24% of your words` | "It measured how I write. Sentence length. The words I actually reach for. The ones I never use." |
 | 0:17–0:21 | Back to the two posts | **"Which one was the AI?"** | "Guess in the comments. Answer's pinned." |
-| 0:21–0:23 | Logo | `Postwave` | — |
+| 0:21–0:23 | Logo | `Sixfold` | — |
 
 **Why it works:** it asks a question the viewer wants to answer publicly. Pin
 the answer, reply to the first fifty guesses — comment velocity in the first

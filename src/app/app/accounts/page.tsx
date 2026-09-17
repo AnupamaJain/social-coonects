@@ -129,7 +129,7 @@ export default async function AccountsPage({
                       href={p.docs}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="inline-flex items-center gap-1 text-xs text-brand-500 hover:underline"
+                      className="inline-flex items-center gap-1 text-xs text-clay-500 hover:underline"
                     >
                       Create app <ExternalLink className="size-3" />
                     </a>

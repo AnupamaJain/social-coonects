@@ -25,7 +25,7 @@ export function NavLink({
         aria-current={active ? "page" : undefined}
         className={cn(
           "flex flex-col items-center justify-center gap-1 py-2.5 transition-colors",
-          active ? "text-brand-500" : "text-muted",
+          active ? "text-clay-500" : "text-muted",
         )}
       >
         {children}

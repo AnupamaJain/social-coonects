@@ -14,7 +14,7 @@ export default async function LoginPage() {
       <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
       <p className="mt-2 text-sm text-muted">
         Log in to your queue.{" "}
-        <Link href="/signup" className="font-medium text-brand-500 hover:underline">
+        <Link href="/signup" className="font-medium text-clay-500 hover:underline">
           Need an account?
         </Link>
       </p>

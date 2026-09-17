@@ -108,7 +108,7 @@ at. Views without saves or comments are noise.
 
 ## Reusing this for the product itself
 
-Post these with Postwave. Run the captions through the scorer first.
+Post these with Sixfold. Run the captions through the scorer first.
 
 If your own launch copy scores 40, that's the product telling you something,
 and fixing it before publishing is the most honest demo you'll ever run.

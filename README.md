@@ -1,4 +1,4 @@
-# Postwave
+# Sixfold
 
 A social media scheduler that knows what you should post.
 
@@ -36,8 +36,8 @@ npm run dev
 Open http://localhost:3000 and log in:
 
 ```
-demo@postwave.app
-postwave-demo-2026
+demo@sixfold.app
+sixfold-demo-2026
 ```
 
 In a second terminal, run the scheduler so queued posts actually go out:

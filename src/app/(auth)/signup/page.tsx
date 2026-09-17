@@ -14,7 +14,7 @@ export default async function SignupPage() {
       <h1 className="text-2xl font-semibold tracking-tight">Start free</h1>
       <p className="mt-2 text-sm text-muted">
         No card required.{" "}
-        <Link href="/login" className="font-medium text-brand-500 hover:underline">
+        <Link href="/login" className="font-medium text-clay-500 hover:underline">
           Already have an account?
         </Link>
       </p>

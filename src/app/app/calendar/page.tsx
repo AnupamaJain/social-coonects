@@ -162,7 +162,7 @@ export default async function CalendarPage({
                           className={cn(
                             "grid size-5 place-items-center rounded-full text-xs tabular-nums",
                             isToday
-                              ? "bg-brand-600 font-semibold text-white"
+                              ? "bg-clay-600 font-semibold text-white"
                               : inMonth
                                 ? ""
                                 : "text-muted",
@@ -194,7 +194,7 @@ export default async function CalendarPage({
                                   ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                                   : p.status === "failed"
                                     ? "bg-red-500/10 text-red-600 dark:text-red-400"
-                                    : "bg-brand-500/10 text-brand-700 hover:bg-brand-500/20 dark:text-brand-300",
+                                    : "bg-clay-500/10 text-clay-700 hover:bg-clay-500/20 dark:text-clay-300",
                               )}
                             >
                               <span className="mr-1 font-mono opacity-70">

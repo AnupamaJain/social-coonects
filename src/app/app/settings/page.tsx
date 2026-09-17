@@ -70,7 +70,7 @@ export default async function SettingsPage() {
             </dl>
             <p className="mt-4 text-xs text-muted">
               Need to connect more places to publish?{" "}
-              <Link href="/app/accounts" className="text-brand-500 hover:underline">
+              <Link href="/app/accounts" className="text-clay-500 hover:underline">
                 Manage accounts
               </Link>
               .

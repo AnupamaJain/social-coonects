@@ -3,7 +3,7 @@
  *
  *   npm run db:seed
  *
- * Creates demo@postwave.app / password123 with a trained Voice Fingerprint,
+ * Creates demo@sixfold.app / sixfold-demo-2026 with a trained Voice Fingerprint,
  * two sandbox accounts, and 20 posts published across the last 40 days with
  * metrics — enough history that the predictor actually trains and the
  * analytics page has a real shape on first load.
@@ -18,8 +18,8 @@ import { trainPredictor } from "../src/lib/predictor";
 import { slugify } from "../src/lib/utils";
 import type { PlatformId } from "../src/lib/platforms/types";
 
-const EMAIL = "demo@postwave.app";
-const PASSWORD = "postwave-demo-2026";
+const EMAIL = "demo@sixfold.app";
+const PASSWORD = "sixfold-demo-2026";
 
 const VOICE_SAMPLES = [
   `We cut our posting volume by 60% and reach went up.

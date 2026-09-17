@@ -8,7 +8,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Postwave
+# Sixfold
 
 A social media scheduler whose differentiators are the Voice Fingerprint,
 the Pre-flight Predictor, and the Autopilot Queue. Read

@@ -76,7 +76,7 @@ export default async function VoicePage() {
               <h2 className="text-sm font-semibold">Fingerprint strength</h2>
               <div className="mt-3 h-2 overflow-hidden rounded-full border bg-[var(--bg-subtle)]">
                 <div
-                  className="h-full rounded-full bg-brand-500 transition-[width] duration-500"
+                  className="h-full rounded-full bg-clay-500 transition-[width] duration-500"
                   style={{ width: `${Math.max(3, strength)}%` }}
                 />
               </div>

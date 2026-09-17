@@ -36,6 +36,16 @@ vercel integration add neon
 Any Postgres connection string works — Supabase, RDS, a container. Only the URL
 matters.
 
+> **Then delete `.env.local`.** `vercel integration add` pulls the new
+> variables into `.env.local` as a convenience — which means your *local* dev
+> server is now pointed at the *production* database, with a Prisma client
+> generated for SQLite. Nothing in the repo asked for that. Remove the file
+> (it's gitignored) and local development goes back to `prisma/dev.db`.
+>
+> ```bash
+> rm .env.local
+> ```
+
 > **Poolers and migrations.** Neon and Supabase both set `DATABASE_URL` to a
 > pgbouncer endpoint. That's correct for serverless request handling, but
 > migrations can't run through it — pgbouncer's transaction mode breaks the

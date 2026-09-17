@@ -31,7 +31,7 @@ export function WorkspaceSwitcher({
         className="surface flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-subtle)]"
         aria-expanded={open}
       >
-        <span className="grid size-7 shrink-0 place-items-center rounded-md bg-brand-600 text-xs font-semibold text-white">
+        <span className="grid size-7 shrink-0 place-items-center rounded-md bg-clay-600 text-xs font-semibold text-white">
           {initials(current.name)}
         </span>
         <span className="min-w-0 flex-1 truncate font-medium">{current.name}</span>
@@ -53,7 +53,7 @@ export function WorkspaceSwitcher({
               className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm hover:bg-[var(--bg-subtle)]"
             >
               <span className="flex-1 truncate">{w.name}</span>
-              {w.id === current.id ? <Check className="size-3.5 text-brand-500" /> : null}
+              {w.id === current.id ? <Check className="size-3.5 text-clay-500" /> : null}
             </button>
           ))}
 

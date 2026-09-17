@@ -105,7 +105,7 @@ export function QueueEditor({ slots: initial }: { slots: Slot[] }) {
                 <button
                   type="button"
                   onClick={() => addSlot(i)}
-                  className="flex items-center gap-1 rounded-lg border border-dashed px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-brand-500/50 hover:text-brand-500"
+                  className="flex items-center gap-1 rounded-lg border border-dashed px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-clay-500/50 hover:text-clay-500"
                 >
                   <Plus className="size-3" /> Add
                 </button>

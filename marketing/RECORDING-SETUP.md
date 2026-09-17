@@ -12,7 +12,7 @@ npm run db:reset     # wipes and reseeds: 40 days of history, trained predictor
 npm run dev
 ```
 
-Log in as `demo@postwave.app` / `postwave-demo-2026`.
+Log in as `demo@sixfold.app` / `sixfold-demo-2026`.
 
 The seed is built for filming. It already has:
 

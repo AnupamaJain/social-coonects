@@ -25,7 +25,7 @@ export default function GlobalError({
         }}
       >
         <div style={{ textAlign: "center", padding: 24 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 600 }}>Postwave is having a problem</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 600 }}>Sixfold is having a problem</h1>
           <p style={{ color: "#8e8ea0", marginTop: 8, fontSize: 14 }}>
             {error.digest ? `Reference ${error.digest}` : "Please try again."}
           </p>

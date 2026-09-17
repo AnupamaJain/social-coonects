@@ -12,14 +12,17 @@ type ButtonSize = "sm" | "md" | "lg";
 const buttonBase =
   "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap";
 
+// Primary is ink, not the accent. Solid black on warm paper is the whole
+// editorial register; clay is a highlight colour and loses its force the moment
+// it is used for every button on the page.
 const buttonVariants: Record<ButtonVariant, string> = {
   primary:
-    "bg-brand-600 text-white hover:bg-brand-500 shadow-sm shadow-brand-600/25 active:scale-[0.98]",
+    "bg-ink-900 text-ink-50 hover:bg-ink-800 dark:bg-ink-50 dark:text-ink-950 dark:hover:bg-white active:scale-[0.98]",
   secondary:
-    "bg-ink-900 text-white hover:bg-ink-800 dark:bg-white dark:text-ink-950 dark:hover:bg-ink-100 active:scale-[0.98]",
+    "bg-clay-600 text-white hover:bg-clay-500 active:scale-[0.98]",
   outline: "surface hover:bg-[var(--bg-subtle)] active:scale-[0.98]",
   ghost: "hover:bg-[var(--bg-subtle)] text-muted hover:text-[var(--fg)]",
-  danger: "bg-red-600 text-white hover:bg-red-500 active:scale-[0.98]",
+  danger: "bg-red-700 text-white hover:bg-red-600 active:scale-[0.98]",
 };
 
 const buttonSizes: Record<ButtonSize, string> = {
@@ -102,7 +105,7 @@ export function CardHeader({
 // ---------------------------------------------------------------------------
 
 const fieldBase =
-  "w-full rounded-lg surface px-3 py-2 text-sm placeholder:text-ink-400 focus:border-brand-500 transition-colors";
+  "w-full rounded-lg surface px-3 py-2 text-sm placeholder:text-ink-400 focus:border-clay-500 transition-colors";
 
 export const Input = React.forwardRef<
   HTMLInputElement,
@@ -156,7 +159,7 @@ export function Badge({
 }) {
   const tones = {
     neutral: "bg-[var(--bg-subtle)] text-muted border",
-    brand: "bg-brand-500/10 text-brand-500 border border-brand-500/20",
+    brand: "bg-clay-500/10 text-clay-500 border border-clay-500/20",
     success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
     warning: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
     danger: "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
@@ -208,7 +211,7 @@ export function Alert({
   className?: string;
 }) {
   const tones = {
-    info: "bg-brand-500/8 border-brand-500/25 text-brand-700 dark:text-brand-300",
+    info: "bg-clay-500/8 border-clay-500/25 text-clay-700 dark:text-clay-300",
     warning: "bg-amber-500/8 border-amber-500/25 text-amber-700 dark:text-amber-300",
     danger: "bg-red-500/8 border-red-500/25 text-red-700 dark:text-red-300",
     success: "bg-emerald-500/8 border-emerald-500/25 text-emerald-700 dark:text-emerald-300",
