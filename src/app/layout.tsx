@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
-import { PLANS } from "@/lib/billing";
+import { PLANS } from "@/lib/plans";
 import { SITE, siteUrl } from "@/lib/site";
 import { HOW_IT_WORKS } from "@/content/landing";
 import "./globals.css";

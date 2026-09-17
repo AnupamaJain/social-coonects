@@ -1,5 +1,5 @@
 import { FAQ } from "@/content/landing";
-import { PLANS } from "@/lib/billing";
+import { PLANS } from "@/lib/plans";
 import { PLATFORMS } from "@/lib/platforms/registry";
 import { SITE, siteUrl } from "@/lib/site";
 

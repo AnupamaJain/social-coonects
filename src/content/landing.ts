@@ -184,6 +184,7 @@ export const FOOTER = {
         { label: "Voice Fingerprint", href: "#voice" },
         { label: "Pre-flight score", href: "#predict" },
         { label: "Autopilot", href: "#autopilot" },
+        { label: "Business case", href: "#case" },
         { label: "Channels", href: "#channels" },
         { label: "Pricing", href: "#pricing" },
       ],

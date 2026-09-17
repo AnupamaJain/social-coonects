@@ -3,9 +3,11 @@ import { ButtonLink } from "@/components/ui";
 import { Logo } from "./logo";
 
 const LINKS = [
+  { label: "Tour", href: "#tour" },
   { label: "Voice", href: "#voice" },
   { label: "Score", href: "#predict" },
   { label: "Autopilot", href: "#autopilot" },
+  { label: "ROI", href: "#case" },
   { label: "Channels", href: "#channels" },
   { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },

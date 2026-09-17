@@ -14,13 +14,15 @@ import { ButtonLink } from "@/components/ui";
 import { LiveDemo } from "@/components/marketing/live-demo";
 import { DemoPlayer } from "@/components/marketing/demo-player";
 import { CalendarLive } from "@/components/marketing/calendar-live";
+import { CaseStudy } from "@/components/marketing/case-study";
+import { Showcase } from "@/components/marketing/showcase";
 import { Avatar } from "@/components/marketing/avatar";
 import { TestimonialForm } from "@/components/marketing/testimonials";
 import { db } from "@/lib/db";
 import { Reveal } from "@/components/marketing/reveal";
 import { siteUrl } from "@/lib/site";
 import { DEMO_SCORE_HUMAN } from "@/content/demo-scores";
-import { PLANS } from "@/lib/billing";
+import { PLANS } from "@/lib/plans";
 import {
   AI_FEATURES, ANNOUNCEMENT, AUDIENCES, CHANNELS, FAQ, FOOTER, HERO, HOW_IT_WORKS,
   PROOF, TESTIMONIALS, TOOLS,
@@ -240,6 +242,20 @@ export default async function LandingPage() {
       </Section>
 
       {/* ============================================================== */}
+      {/* Product tour — real screenshots of the running app              */}
+      {/* ============================================================== */}
+      <Section id="tour">
+        <Reveal>
+          <SectionTitle center sub="Real screenshots, captured from the running app — not mockups.">
+            This is the whole product
+          </SectionTitle>
+        </Reveal>
+        <Reveal delay={100} className="mt-12">
+          <Showcase />
+        </Reveal>
+      </Section>
+
+      {/* ============================================================== */}
       {/* How it works — matches the HowTo schema in the layout           */}
       {/* ============================================================== */}
       <Section id="how-it-works" tone="subtle">
@@ -308,6 +324,23 @@ export default async function LandingPage() {
               />
             </Reveal>
           ))}
+        </div>
+      </Section>
+
+      {/* ============================================================== */}
+      {/* The business case, on the visitor's own numbers                 */}
+      {/* ============================================================== */}
+      <Section id="case" tone="subtle">
+        <Reveal>
+          <SectionTitle
+            center
+            sub="Not a customer story — we don't have one yet. Put your own numbers in and watch the case build itself."
+          >
+            The business case, in three acts
+          </SectionTitle>
+        </Reveal>
+        <div className="mt-14">
+          <CaseStudy />
         </div>
       </Section>
 

@@ -2,46 +2,10 @@ import "server-only";
 import Stripe from "stripe";
 import { appUrl } from "./platforms/oauth";
 
-export const PLANS = {
-  free: {
-    id: "free" as const,
-    name: "Starter",
-    price: 0,
-    maxAccounts: 2,
-    maxScheduled: 10,
-    maxAiRunsPerDay: 5,
-    autopilot: false,
-    features: [
-      "2 connected accounts",
-      "10 scheduled posts",
-      "Voice Fingerprint (1 profile)",
-      "Pre-flight scoring",
-      "5 AI generations a day",
-    ],
-  },
-  pro: {
-    id: "pro" as const,
-    name: "Pro",
-    price: 29,
-    maxAccounts: 25,
-    maxScheduled: 10_000,
-    maxAiRunsPerDay: 1_000,
-    autopilot: true,
-    features: [
-      "25 connected accounts",
-      "Unlimited scheduling",
-      "Autopilot queue — a week of drafts, always ready",
-      "Predictor retrained on your own analytics",
-      "Unlimited AI generations",
-      "Multiple brands / clients",
-    ],
-  },
-};
-
-export type PlanId = keyof typeof PLANS;
-
-export const planFor = (plan: string | null | undefined) =>
-  PLANS[(plan as PlanId) ?? "free"] ?? PLANS.free;
+// Plans live in plans.ts so the browser can read them without pulling in
+// `server-only` or the Stripe SDK. Re-exported here so existing imports of
+// `@/lib/billing` keep working.
+export { PLANS, planFor, type PlanId } from "./plans";
 
 export const stripeEnabled = () =>
   Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID);

@@ -228,6 +228,7 @@ in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 | `npm run db:seed` | Demo account with 40 days of history |
 | `npm run db:reset` | Wipe and reseed |
 | `npm run db:studio` | Prisma Studio |
+| `npm run screenshots` | Recapture the landing-page product shots from the running app |
 | `npx tsx scripts/cleanup-test-users.ts` | Removes smoke-test accounts (needs a direct `DATABASE_URL`) |
 
 > After editing `prisma/schema.prisma`, run **both** `npm run db:migrate` and
