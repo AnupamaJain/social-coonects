@@ -5,6 +5,7 @@ import { getPlatform } from "@/lib/platforms/registry";
 import type { PlatformId } from "@/lib/platforms/types";
 import { Logo } from "./logo";
 import { DoodleCta } from "./doodles";
+import { Counter } from "./counter";
 
 /* ------------------------------------------------------------------ */
 /* Primitives                                                          */
@@ -129,7 +130,7 @@ export function ProofStrip({ items }: { items: { big: string; small: string }[] 
           className="surface flex w-56 shrink-0 flex-col justify-between rounded-2xl p-5"
         >
           <p className="font-serif text-3xl font-semibold tabular-nums tracking-tight">
-            {it.big}
+            <Counter value={it.big} />
           </p>
           <p className="mt-3 text-sm text-muted">{it.small}</p>
         </div>

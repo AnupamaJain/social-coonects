@@ -11,6 +11,9 @@ import {
   Faq, Footer, ProofStrip, Section, SectionTitle, ToolRow, VideoFrame, WallOfLove,
 } from "@/components/marketing/sections";
 import { ButtonLink } from "@/components/ui";
+import { LiveDemo } from "@/components/marketing/live-demo";
+import { Reveal } from "@/components/marketing/reveal";
+import { siteUrl } from "@/lib/site";
 import { PLANS } from "@/lib/billing";
 import {
   AI_FEATURES, ANNOUNCEMENT, AUDIENCES, CHANNELS, FAQ, FOOTER, HERO, PROOF,
@@ -66,6 +69,17 @@ const TOOL_GRAPHICS: Record<string, React.ReactNode> = {
       </div>
     </div>
   ),
+};
+
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${siteUrl}/#faq`,
+  mainEntity: FAQ.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
 };
 
 export default async function LandingPage() {
@@ -156,6 +170,20 @@ export default async function LandingPage() {
       </section>
 
       {/* ============================================================== */}
+      {/* Live demo — the product, no account needed                      */}
+      {/* ============================================================== */}
+      <Section id="try">
+        <Reveal>
+          <SectionTitle center sub="Paste anything. It scores as you type, entirely in your browser.">
+            Try it on a post right now
+          </SectionTitle>
+        </Reveal>
+        <Reveal delay={120} className="mt-12">
+          <LiveDemo />
+        </Reveal>
+      </Section>
+
+      {/* ============================================================== */}
       {/* Story: 180 posts                                                */}
       {/* ============================================================== */}
       <Section>
@@ -169,7 +197,7 @@ export default async function LandingPage() {
               </span>
             </SectionTitle>
           </div>
-          <PostGrid />
+          <Reveal delay={100}><PostGrid /></Reveal>
         </div>
       </Section>
 
@@ -178,9 +206,9 @@ export default async function LandingPage() {
       {/* ============================================================== */}
       <Section tone="subtle">
         <SectionTitle center>Who is Sixfold for?</SectionTitle>
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <AudienceGrid items={AUDIENCES} />
-        </div>
+        </Reveal>
       </Section>
 
       {/* ============================================================== */}
@@ -190,7 +218,7 @@ export default async function LandingPage() {
         <SectionTitle center sub="Ninety seconds: paste a post, watch the score, fix it, queue it.">
           See Sixfold in action
         </SectionTitle>
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <VideoFrame
             url={DEMO_VIDEO_URL}
             poster={
@@ -201,7 +229,7 @@ export default async function LandingPage() {
               </div>
             }
           />
-        </div>
+        </Reveal>
       </Section>
 
       {/* ============================================================== */}
@@ -214,9 +242,9 @@ export default async function LandingPage() {
             Power your content with AI that sounds like you
           </SectionTitle>
         </div>
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <AiGrid items={AI_FEATURES} />
-        </div>
+        </Reveal>
       </Section>
 
       {/* ============================================================== */}
@@ -226,7 +254,8 @@ export default async function LandingPage() {
         <SectionTitle center>Every tool for social growth, in one place</SectionTitle>
         <div className="mt-20 space-y-24">
           {TOOLS.map((t, i) => (
-            <div key={t.key} id={t.key === "autopilot" ? "autopilot" : undefined}>
+            <Reveal key={t.key}>
+              {t.key === "autopilot" ? <span id="autopilot" className="block scroll-mt-24" /> : null}
               <ToolRow
                 kicker={t.kicker}
                 title={t.title}
@@ -234,7 +263,7 @@ export default async function LandingPage() {
                 graphic={TOOL_GRAPHICS[t.key]}
                 flip={i % 2 === 1}
               />
-            </div>
+            </Reveal>
           ))}
         </div>
       </Section>
@@ -246,9 +275,9 @@ export default async function LandingPage() {
         <SectionTitle center sub="One composer. Each channel gets its own version, its own preview, its own score.">
           Every channel that matters
         </SectionTitle>
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <ChannelGrid channels={CHANNELS} />
-        </div>
+        </Reveal>
       </Section>
 
       {/* ============================================================== */}
@@ -321,9 +350,9 @@ export default async function LandingPage() {
             <Underline />
           </span>
         </SectionTitle>
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <Faq items={FAQ} />
-        </div>
+        </Reveal>
       </Section>
 
       {/* ============================================================== */}
@@ -334,6 +363,10 @@ export default async function LandingPage() {
       </Section>
 
       <Footer {...FOOTER} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData).replace(/</g, "\\u003c") }}
+      />
     </div>
   );
 }

@@ -4,7 +4,11 @@ import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth";
 import { AuthForm } from "../auth-form";
 
-export const metadata: Metadata = { title: "Sign up" };
+export const metadata: Metadata = {
+  title: "Start free",
+  // Auth pages are not landing pages; keep them out of the index.
+  robots: { index: true, follow: true },
+};
 
 export default async function SignupPage() {
   if (await getCurrentUser()) redirect("/app");
