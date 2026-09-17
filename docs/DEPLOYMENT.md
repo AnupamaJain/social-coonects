@@ -36,6 +36,14 @@ vercel integration add neon
 Any Postgres connection string works — Supabase, RDS, a container. Only the URL
 matters.
 
+> **Poolers and migrations.** Neon and Supabase both set `DATABASE_URL` to a
+> pgbouncer endpoint. That's correct for serverless request handling, but
+> migrations can't run through it — pgbouncer's transaction mode breaks the
+> session-level locks Prisma Migrate needs. `prisma.config.ts` automatically
+> prefers `DATABASE_URL_UNPOOLED` / `POSTGRES_URL_NON_POOLING` for the CLI,
+> both of which the Neon integration sets for you. On a provider that sets
+> neither, point `DIRECT_DATABASE_URL` at a direct connection yourself.
+
 ## 2. Configure
 
 ```bash
