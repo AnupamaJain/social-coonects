@@ -5,12 +5,13 @@ import { getPlatform } from "@/lib/platforms/registry";
 import type { PlatformId } from "@/lib/platforms/types";
 import { Avatar as Illustrated } from "@/components/marketing/avatar";
 import { BrandLogo } from "@/components/marketing/brand-logos";
+import type { PostMedia } from "@/lib/media";
 
 interface PreviewProps {
   platform: PlatformId;
   text: string;
   author: { name: string; handle: string; avatarUrl?: string | null };
-  mediaUrls?: string[];
+  media?: PostMedia[];
 }
 
 function Avatar({ name, url, rounded = "rounded-full" }: { name: string; url?: string | null; rounded?: string }) {
@@ -64,7 +65,16 @@ function Body({
   );
 }
 
-export function PlatformPreview({ platform, text, author, mediaUrls = [] }: PreviewProps) {
+/** Renders whichever kind of attachment the post carries. */
+function Attachment({ item, className }: { item: PostMedia; className: string }) {
+  if (item.type === "video") {
+    return <video src={item.url} className={className} controls muted playsInline preload="metadata" />;
+  }
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={item.url} alt="" className={className} />;
+}
+
+export function PlatformPreview({ platform, text, author, media = [] }: PreviewProps) {
   const body = text.trim() || "Your post will appear here…";
   const muted = !text.trim();
 
@@ -82,10 +92,7 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
             <div className={`mt-0.5 ${muted ? "text-muted" : ""}`}>
               <Body text={body} platform={platform} />
             </div>
-            {mediaUrls[0] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={mediaUrls[0]} alt="" className="mt-3 w-full rounded-xl border object-cover" />
-            ) : null}
+            {media[0] ? <Attachment item={media[0]} className="mt-3 w-full rounded-xl border object-cover" /> : null}
             <div className="mt-3 flex max-w-xs justify-between text-muted">
               <MessageCircle className="size-4" />
               <Repeat2 className="size-4" />
@@ -114,10 +121,7 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
           {/* LinkedIn collapses at ~210 characters on desktop. */}
           <Body text={body} clampAt={210} platform={platform} />
         </div>
-        {mediaUrls[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={mediaUrls[0]} alt="" className="w-full border-y object-cover" />
-        ) : null}
+        {media[0] ? <Attachment item={media[0]} className="w-full border-y object-cover" /> : null}
         <div className="flex justify-around border-t px-2 py-1.5 text-xs text-muted">
           {["Like", "Comment", "Repost", "Send"].map((a) => (
             <span key={a} className="flex items-center gap-1.5 px-2 py-1.5">
@@ -137,9 +141,8 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
           <span className="flex-1 text-sm font-semibold">{author.handle.replace(/^@/, "")}</span>
           <BrandLogo platform="instagram" className="size-4 shrink-0" />
         </div>
-        {mediaUrls[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={mediaUrls[0]} alt="" className="aspect-square w-full object-cover" />
+        {media[0] ? (
+          <Attachment item={media[0]} className="aspect-square w-full object-cover" />
         ) : (
           <div className="grid aspect-square w-full place-items-center border-y bg-[var(--bg-subtle)] text-center text-sm text-muted">
             <span className="max-w-[16rem] px-6">
@@ -178,10 +181,7 @@ export function PlatformPreview({ platform, text, author, mediaUrls = [] }: Prev
           <div className={`mt-2 ${muted ? "text-muted" : ""}`}>
             <Body text={body} platform={platform} />
           </div>
-          {mediaUrls[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={mediaUrls[0]} alt="" className="mt-3 w-full rounded-lg border object-cover" />
-          ) : null}
+          {media[0] ? <Attachment item={media[0]} className="mt-3 w-full rounded-lg border object-cover" /> : null}
           <div className="mt-3 flex gap-5 text-muted">
             <Heart className="size-4" />
             <MessageCircle className="size-4" />

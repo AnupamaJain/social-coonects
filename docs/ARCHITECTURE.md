@@ -127,6 +127,24 @@ cadence decision made once rather than a datetime picked every time.
 - **`publish.ts` / `metrics.ts`** — the actual API calls, and the sandbox
   fallback.
 
+### Media is fetched, not uploaded
+
+Instagram and Threads do not accept a file. You hand them a public URL and they
+fetch it, which is why `src/lib/media.ts` insists on `https://` and why uploads
+go to Blob storage rather than staying on the server.
+
+That also makes Blob optional: pasting a public URL reaches exactly the same
+code path, so the feature works on a free plan with nothing provisioned.
+
+A lone video publishes as a Reel (`media_type=REELS`). Reels and Threads video
+are transcoded after the container is created and reject a publish until that
+finishes, so `waitForContainer` polls `status_code` and surfaces `ERROR` or
+`EXPIRED` with Meta's own message instead of letting the publish fail with
+something vaguer.
+
+Stored media was originally a bare `string[]` of URLs. `normaliseMedia` reads
+both that and the current typed shape, so no data migration was needed.
+
 ### Sandbox is a mode, not a mock
 
 An account without OAuth credentials is `isSandbox`. It flows through the same

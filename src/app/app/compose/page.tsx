@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireWorkspace } from "@/lib/auth";
 import { db, readJson } from "@/lib/db";
+import { normaliseMedia } from "@/lib/media";
 import { aiEnabled } from "@/lib/ai/model";
 import { getVoiceContext } from "@/lib/voice";
 import { Composer } from "./composer";
@@ -42,6 +43,7 @@ export default async function ComposePage({
       workspaceName={workspace.name}
       voiceTrained={Boolean(voice.traits.sampleCount)}
       aiOnline={aiEnabled()}
+      uploadsEnabled={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
       post={
         post
           ? {
@@ -49,7 +51,7 @@ export default async function ComposePage({
               body: post.body,
               status: post.status,
               scheduledAt: post.scheduledAt?.toISOString() ?? null,
-              mediaUrls: readJson<string[]>(post.mediaUrls, []),
+              media: normaliseMedia(readJson<unknown[]>(post.mediaUrls, [])),
               targets: post.targets.map((t) => ({
                 accountId: t.accountId,
                 override: t.override,

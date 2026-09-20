@@ -40,7 +40,7 @@ export interface PlatformDef {
 
 export interface PublishInput {
   text: string;
-  mediaUrls: string[];
+  media: import("@/lib/media").PostMedia[];
 }
 
 export interface PublishResult {

@@ -1,6 +1,7 @@
 import "server-only";
 import { db, readJson, writeJson } from "./db";
 import { withTokens } from "./accounts";
+import { normaliseMedia } from "./media";
 import { publishToPlatform } from "./platforms/publish";
 import { fetchMetrics } from "./platforms/metrics";
 import { getWeights } from "./predictor";
@@ -117,14 +118,14 @@ export async function publishPost(postId: string) {
   if (!post.targets.length) throw new Error("This post has no connected accounts selected.");
 
   await db.post.update({ where: { id: postId }, data: { status: "publishing" } });
-  const mediaUrls = readJson<string[]>(post.mediaUrls, []);
+  const media = normaliseMedia(readJson<unknown[]>(post.mediaUrls, []));
 
   const outcomes = await Promise.all(
     post.targets.map(async (target) => {
       try {
         const result = await publishToPlatform(withTokens(target.account), {
           text: target.override ?? post.body,
-          mediaUrls,
+          media,
         });
         await db.postTarget.update({
           where: { id: target.id },

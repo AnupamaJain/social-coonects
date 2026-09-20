@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db, readJson, writeJson } from "@/lib/db";
+import { normaliseMedia } from "@/lib/media";
 import { requireUser, requireWorkspace } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import { planFor } from "@/lib/billing";
@@ -43,6 +44,8 @@ export async function savePost(
   const scheduledAtRaw = String(formData.get("scheduledAt") ?? "");
   const overridesRaw = String(formData.get("overrides") ?? "{}");
   const overrides = readJson<Record<string, string>>(overridesRaw, {});
+  // Normalised on the way in so a hand-crafted payload can't store junk.
+  const media = normaliseMedia(readJson<unknown[]>(String(formData.get("media") ?? "[]"), []));
 
   if (!body) return { error: "Write something first." };
 
@@ -83,7 +86,7 @@ export async function savePost(
   const post = postId
     ? await db.post.update({
         where: { id: postId },
-        data: { body, status, scheduledAt },
+        data: { body, status, scheduledAt, mediaUrls: writeJson(media) },
       })
     : await db.post.create({
         data: {
@@ -91,6 +94,7 @@ export async function savePost(
           body,
           status,
           scheduledAt,
+          mediaUrls: writeJson(media),
           source: (formData.get("source") as string) || "manual",
         },
       });

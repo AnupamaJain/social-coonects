@@ -125,6 +125,7 @@ in production. See `.env.example` for the full annotated list.
 | `APP_URL` | production | Inferred from `VERCEL_PROJECT_PRODUCTION_URL` on Vercel |
 | `AI_GATEWAY_API_KEY` *or* `ANTHROPIC_API_KEY` | no | Generation falls back to a template writer. Scoring and Voice Match are unaffected |
 | `AI_MODEL` | no | Defaults to `anthropic/claude-sonnet-5` |
+| `BLOB_READ_WRITE_TOKEN` | no | Composer asks for a public media URL instead of offering file upload |
 | `ADMIN_EMAIL` | no | Nobody can approve testimonials; nothing submitted shows publicly |
 | `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION` | no | No verification meta tags |
 | `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` | no | Billing page explains what's missing; everyone stays on the free plan |
@@ -248,9 +249,12 @@ in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
 Worth knowing before you charge anyone for this:
 
-- **No media uploads yet.** `Post.mediaUrls` is wired through the whole
-  publishing path, but there's no upload UI — so Instagram, which requires an
-  image, can only publish via sandbox for now.
+- **Video is Instagram, Threads, Facebook and X only.** LinkedIn and Mastodon
+  video aren't wired up; the composer refuses them rather than failing at
+  publish time.
+- **No Reel cover picker.** A video's `thumbnailUrl` is sent as the Instagram
+  cover when present, but nothing in the UI sets one yet, so Instagram picks
+  the frame.
 - **LinkedIn impressions need a higher API tier.** The Marketing Developer
   Platform gates impression data; likes and comments come through on the
   standard tier. Reach will read 0 for LinkedIn until you have it.

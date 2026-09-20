@@ -17,6 +17,8 @@ import { getPlatform } from "@/lib/platforms/registry";
 import type { PlatformId } from "@/lib/platforms/types";
 import { cn } from "@/lib/utils";
 import { savePost, type SaveState } from "../actions";
+import { MediaUploader } from "@/components/media-uploader";
+import { isReel, validateMedia, type PostMedia } from "@/lib/media";
 
 interface AccountLite {
   id: string;
@@ -32,7 +34,7 @@ interface PostLite {
   body: string;
   status: string;
   scheduledAt: string | null;
-  mediaUrls: string[];
+  media: PostMedia[];
   targets: { accountId: string; override: string | null }[];
 }
 
@@ -50,12 +52,14 @@ export function Composer({
   workspaceName,
   voiceTrained,
   aiOnline,
+  uploadsEnabled,
   post,
 }: {
   accounts: AccountLite[];
   workspaceName: string;
   voiceTrained: boolean;
   aiOnline: boolean;
+  uploadsEnabled: boolean;
   post: PostLite | null;
 }) {
   const [body, setBody] = useState(post?.body ?? "");
@@ -83,6 +87,7 @@ export function Composer({
     post?.scheduledAt ? post.scheduledAt.slice(0, 16) : "",
   );
   const [showSchedule, setShowSchedule] = useState(false);
+  const [media, setMedia] = useState<PostMedia[]>(post?.media ?? []);
   const [saveState, saveAction] = useActionState<SaveState, FormData>(savePost, {});
 
   const activeAccount = accounts.find((a) => a.id === activeId) ?? accounts[0] ?? null;
@@ -197,15 +202,23 @@ export function Composer({
     .filter((a) => selected.includes(a.id))
     .filter((a) => textFor(a.id).length > getPlatform(a.platform).charLimit);
 
-  const missingMedia = accounts
-    .filter((a) => selected.includes(a.id))
-    .filter((a) => getPlatform(a.platform).requiresMedia && !(post?.mediaUrls.length));
+  const mediaProblems = validateMedia(
+    media,
+    selectedPlatforms as PlatformId[],
+    Object.fromEntries(
+      selectedPlatforms.map((p) => {
+        const d = getPlatform(p);
+        return [p, { requiresMedia: d.requiresMedia, maxMedia: d.maxMedia, name: d.name }];
+      }),
+    ) as Parameters<typeof validateMedia>[2],
+  );
 
   return (
     <form action={saveAction}>
       <input type="hidden" name="postId" value={post?.id ?? ""} />
       <input type="hidden" name="overrides" value={JSON.stringify(overrides)} />
       <input type="hidden" name="body" value={body} />
+      <input type="hidden" name="media" value={JSON.stringify(media)} />
       {selected.map((id) => (
         <input key={id} type="hidden" name="accountIds" value={id} />
       ))}
@@ -315,7 +328,16 @@ export function Composer({
                 className="text-[15px]"
               />
 
-              <div className="mt-3 flex flex-wrap items-center gap-2">
+              <div className="mt-4 border-t pt-4">
+                <MediaUploader media={media} onChange={setMedia} uploadsEnabled={uploadsEnabled} />
+                {isReel(media) ? (
+                  <p className="mt-2 flex items-center gap-1.5 text-xs text-clay-600 dark:text-clay-400">
+                    <Sparkles className="size-3.5" /> One video, no images — Instagram will publish this as a Reel.
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 <Button
                   type="button"
                   size="sm"
@@ -456,7 +478,7 @@ export function Composer({
                   <PlatformPreview
                     platform={activePlatform}
                     text={textFor(activeAccount.id)}
-                    mediaUrls={post?.mediaUrls ?? []}
+                    media={media}
                     author={{
                       name: activeAccount.displayName || workspaceName,
                       handle: activeAccount.handle,
@@ -522,7 +544,7 @@ export function Composer({
             </Card>
 
             {/* Blockers */}
-            {overLimit.length > 0 || missingMedia.length > 0 ? (
+            {overLimit.length > 0 || mediaProblems.length > 0 ? (
               <Alert tone="danger">
                 {overLimit.map((a) => (
                   <p key={a.id}>
@@ -530,10 +552,8 @@ export function Composer({
                     {getPlatform(a.platform).charLimit}).
                   </p>
                 ))}
-                {missingMedia.map((a) => (
-                  <p key={a.id}>
-                    {getPlatform(a.platform).name} needs an image before it can publish.
-                  </p>
+                {mediaProblems.map((p) => (
+                  <p key={`${p.platform}-${p.message}`}>{p.message}</p>
                 ))}
               </Alert>
             ) : null}
@@ -590,7 +610,7 @@ export function Composer({
                 value="publish"
                 variant="secondary"
                 className="w-full"
-                disabled={!selected.length || overLimit.length > 0}
+                disabled={!selected.length || overLimit.length > 0 || mediaProblems.length > 0}
               >
                 <Send className="size-4" /> Publish now
               </Button>

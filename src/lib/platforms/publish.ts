@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { readJson } from "@/lib/db";
 import { slugify } from "@/lib/utils";
+import { isReel } from "@/lib/media";
 import type { PlatformId, PublishInput, PublishResult } from "./types";
 
 interface AccountLike {
@@ -24,6 +25,38 @@ function sandboxPublish(account: AccountLike): PublishResult {
     remoteId,
     remoteUrl: `https://sandbox.local/${account.platform}/${slugify(account.handle)}/${remoteId}`,
   };
+}
+
+/**
+ * Meta transcodes video after the container is created and rejects a publish
+ * until it finishes. Poll until FINISHED, and surface ERROR rather than letting
+ * the publish fail with something less specific.
+ */
+async function waitForContainer(
+  containerId: string,
+  token: string,
+  base = "https://graph.facebook.com/v21.0",
+  { attempts = 30, intervalMs = 3000 } = {},
+): Promise<void> {
+  for (let i = 0; i < attempts; i++) {
+    await new Promise((r) => setTimeout(r, intervalMs));
+
+    const res = await fetch(
+      `${base}/${containerId}?fields=status_code,status&access_token=${encodeURIComponent(token)}`,
+    );
+    if (!res.ok) continue;
+
+    const body = (await res.json()) as { status_code?: string; status?: string };
+    if (body.status_code === "FINISHED") return;
+    if (body.status_code === "ERROR" || body.status_code === "EXPIRED") {
+      throw new Error(
+        `Media processing ${body.status_code.toLowerCase()}: ${body.status ?? "no detail given"}`,
+      );
+    }
+  }
+  throw new Error(
+    "Timed out waiting for the video to finish processing. It may still publish — check the account before retrying.",
+  );
 }
 
 async function jsonOrThrow(res: Response, label: string) {
@@ -92,23 +125,42 @@ export async function publishToPlatform(
     }
 
     case "instagram": {
-      if (!input.mediaUrls.length) {
-        throw new Error("Instagram requires at least one image or video.");
+      if (!input.media.length) {
+        throw new Error("Instagram requires an image or a video.");
       }
       const igToken = meta.pageAccessToken ?? token;
+      const reel = isReel(input.media);
+      const asset = input.media[0];
+
+      // Reels are a different container type and, unlike an image, are not
+      // ready the moment the container is created — Meta transcodes first.
       const containerRes = await fetch(
         `https://graph.facebook.com/v21.0/${account.platformUserId}/media`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            image_url: input.mediaUrls[0],
-            caption: input.text,
-            access_token: igToken,
-          }),
+          body: JSON.stringify(
+            reel
+              ? {
+                  media_type: "REELS",
+                  video_url: asset.url,
+                  caption: input.text,
+                  share_to_feed: true,
+                  ...(asset.thumbnailUrl ? { cover_url: asset.thumbnailUrl } : {}),
+                  access_token: igToken,
+                }
+              : {
+                  image_url: asset.url,
+                  caption: input.text,
+                  access_token: igToken,
+                },
+          ),
         },
       );
       const container = await jsonOrThrow(containerRes, "Instagram container");
+
+      if (reel) await waitForContainer(container.id, igToken);
+
       const publishRes = await fetch(
         `https://graph.facebook.com/v21.0/${account.platformUserId}/media_publish`,
         {
@@ -123,7 +175,9 @@ export async function publishToPlatform(
       const published = await jsonOrThrow(publishRes, "Instagram publish");
       return {
         remoteId: published.id,
-        remoteUrl: `https://www.instagram.com/p/${published.id}`,
+        remoteUrl: reel
+          ? `https://www.instagram.com/reel/${published.id}`
+          : `https://www.instagram.com/p/${published.id}`,
       };
     }
 
@@ -136,7 +190,7 @@ export async function publishToPlatform(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             message: input.text,
-            ...(input.mediaUrls[0] ? { link: input.mediaUrls[0] } : {}),
+            ...(input.media[0] ? { link: input.media[0].url } : {}),
             access_token: pageToken,
           }),
         },
@@ -155,14 +209,24 @@ export async function publishToPlatform(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            media_type: input.mediaUrls.length ? "IMAGE" : "TEXT",
-            ...(input.mediaUrls.length ? { image_url: input.mediaUrls[0] } : {}),
+            media_type: input.media.length
+              ? input.media[0].type === "video" ? "VIDEO" : "IMAGE"
+              : "TEXT",
+            ...(input.media.length
+              ? input.media[0].type === "video"
+                ? { video_url: input.media[0].url }
+                : { image_url: input.media[0].url }
+              : {}),
             text: input.text,
             access_token: token,
           }),
         },
       );
       const container = await jsonOrThrow(createRes, "Threads container");
+      // Threads transcodes video too, and rejects a publish before it is ready.
+      if (input.media[0]?.type === "video") {
+        await waitForContainer(container.id, token, "https://graph.threads.net/v1.0");
+      }
       const publishRes = await fetch(
         `https://graph.threads.net/v1.0/${account.platformUserId}/threads_publish`,
         {
