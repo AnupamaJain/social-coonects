@@ -188,9 +188,14 @@ Locally, `npm run worker` polls them (publish every 30s, metrics every 5min).
 
 In production, **Vercel's Hobby plan caps cron at one run per day** — and
 rejects a deploy that asks for more — so `.github/workflows/scheduler.yml`
-drives the endpoints every 5 minutes instead. On Pro, set `CRON_FREQUENT=1` on
-the project to use Vercel Cron and delete the workflow. Both are covered in
-[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+drives the endpoints every 5 minutes instead.
+
+> That workflow ships **disabled**. Add the `APP_URL` and `CRON_SECRET`
+> repository secrets first, then `gh workflow enable scheduler.yml`. Until you
+> do, **nothing publishes on a schedule.**
+
+On Pro, set `CRON_FREQUENT=1` on the project to use Vercel Cron and delete the
+workflow. Both paths are covered in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 

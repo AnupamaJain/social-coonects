@@ -176,16 +176,34 @@ the real scheduling runs elsewhere:
 
 ### On Hobby — GitHub Actions
 
-Add two repository secrets under **Settings → Secrets and variables → Actions**:
+`.github/workflows/scheduler.yml` ships **disabled**, because a workflow that
+runs every five minutes without its secrets just fills your inbox with failures.
 
-| Secret | Value |
-|---|---|
-| `APP_URL` | `https://your-app.vercel.app` |
-| `CRON_SECRET` | the same value set on the Vercel project |
+1. Add both repository secrets under **Settings → Secrets and variables →
+   Actions**:
 
-The workflow then runs every 5 minutes. Trigger it by hand once from the
-**Actions** tab (**Scheduler → Run workflow**) to confirm the secrets are right —
-a wrong `CRON_SECRET` shows up as a `401` in the step output.
+   | Secret | Value |
+   |---|---|
+   | `APP_URL` | `https://your-app.vercel.app` |
+   | `CRON_SECRET` | the same value set on the Vercel project |
+
+2. Enable it:
+
+   ```bash
+   gh workflow enable scheduler.yml
+   ```
+
+3. Run it once by hand (**Actions → Scheduler → Run workflow**) and read the
+   output. A `401` means `CRON_SECRET` doesn't match the Vercel project.
+
+If you enable it before adding the secrets it will skip with a notice rather
+than fail, but it also won't publish anything.
+
+To stop it at any time:
+
+```bash
+gh workflow disable scheduler.yml
+```
 
 GitHub's scheduler is best-effort and can lag several minutes under load, so a
 post may go out slightly after its slot. Fine for social scheduling.

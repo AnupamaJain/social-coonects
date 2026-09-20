@@ -1,21 +1,28 @@
 name: Scheduler
 
-# Drives the two cron endpoints, because Vercel's Hobby plan caps cron at one
-# run per day. GitHub's scheduler is best-effort and can lag under load, so a
-# post may go out a few minutes after its slot — acceptable for social
-# scheduling, and free. On Vercel Pro, set CRON_FREQUENT=1 on the project and
-# delete this workflow.
+# Drives Sixfold's two cron endpoints, because Vercel's Hobby plan caps cron at
+# one run per day.
 #
-# Required repository secrets (Settings -> Secrets and variables -> Actions):
-#   APP_URL      https://your-app.vercel.app
-#   CRON_SECRET  the same value set on the Vercel project
+# ┌─────────────────────────────────────────────────────────────────────────┐
+# │ THIS WORKFLOW IS DISABLED BY DEFAULT.                                   │
+# │                                                                         │
+# │ Enable it only after both repository secrets exist, or nothing will     │
+# │ publish. Settings → Secrets and variables → Actions:                    │
+# │                                                                         │
+# │   APP_URL      https://your-app.vercel.app                              │
+# │   CRON_SECRET  the same value set on the Vercel project                 │
+# │                                                                         │
+# │ Then: gh workflow enable scheduler.yml   (or the Actions tab)           │
+# └─────────────────────────────────────────────────────────────────────────┘
+#
+# If the secrets are missing it exits cleanly with a notice rather than
+# failing. A scheduler that can't reach anything is misconfigured, not broken,
+# and a red X every five minutes teaches you to ignore the ones that matter.
 
 on:
   schedule:
-    # Publishing: every 5 minutes (GitHub's finest granularity).
-    - cron: "*/5 * * * *"
-    # Metrics + predictor retrain: every 6 hours.
-    - cron: "0 */6 * * *"
+    - cron: "*/5 * * * *"   # publish due posts
+    - cron: "0 */6 * * *"   # refresh metrics, retrain predictors
   workflow_dispatch:
     inputs:
       job:
@@ -24,24 +31,62 @@ on:
         options: [publish, metrics, both]
         default: both
 
+# A slow run must never let the next tick pile up behind it.
+concurrency:
+  group: scheduler
+  cancel-in-progress: false
+
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Publish due posts
-        if: github.event.schedule == '*/5 * * * *' || inputs.job == 'publish' || inputs.job == 'both'
+      - name: Check configuration
+        id: cfg
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "${{ secrets.APP_URL }}/api/cron/publish")
+          missing=""
+          [ -z "$APP_URL" ] && missing="$missing APP_URL"
+          [ -z "$CRON_SECRET" ] && missing="$missing CRON_SECRET"
+          if [ -n "$missing" ]; then
+            echo "::notice title=Scheduler skipped::Missing repository secret(s):$missing — see the header of .github/workflows/scheduler.yml"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish due posts
+        if: >-
+          steps.cfg.outputs.ready == 'true' &&
+          (github.event.schedule == '*/5 * * * *' || inputs.job == 'publish' || inputs.job == 'both')
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          code=$(curl -sS --max-time 120 -o /tmp/out.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/publish") || {
+              echo "::error title=Publish unreachable::curl failed against $APP_URL"; exit 1; }
           cat /tmp/out.json
-          if [ "$code" != "200" ]; then echo "::error::publish returned $code"; exit 1; fi
+          if [ "$code" != "200" ]; then
+            echo "::error title=Publish failed::HTTP $code — a 401 means CRON_SECRET does not match the Vercel project"
+            exit 1
+          fi
 
       - name: Refresh metrics and retrain predictors
-        if: github.event.schedule == '0 */6 * * *' || inputs.job == 'metrics' || inputs.job == 'both'
+        if: >-
+          steps.cfg.outputs.ready == 'true' &&
+          (github.event.schedule == '0 */6 * * *' || inputs.job == 'metrics' || inputs.job == 'both')
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "${{ secrets.APP_URL }}/api/cron/metrics")
+          code=$(curl -sS --max-time 120 -o /tmp/out.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/metrics") || {
+              echo "::error title=Metrics unreachable::curl failed against $APP_URL"; exit 1; }
           cat /tmp/out.json
-          if [ "$code" != "200" ]; then echo "::error::metrics returned $code"; exit 1; fi
+          if [ "$code" != "200" ]; then
+            echo "::error title=Metrics failed::HTTP $code"
+            exit 1
+          fi
