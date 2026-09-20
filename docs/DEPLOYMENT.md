@@ -166,61 +166,50 @@ there.
 ### Cron
 
 **Vercel Hobby caps cron at one run per day**, and a deploy is *rejected
-outright* if `vercel.ts` asks for more. So the defaults are Hobby-compatible and
-the real scheduling runs elsewhere:
+outright* if `vercel.ts` asks for more. So `vercel.ts` ships Hobby-compatible
+schedules and Vercel Cron is the only scheduler:
 
-| Plan | What drives scheduling | Publishing interval |
+| Path | Hobby (default) | Pro (`CRON_FREQUENT=1`) |
 |---|---|---|
-| Hobby (default) | `.github/workflows/scheduler.yml` | every 5 minutes |
-| Pro | Vercel Cron, with `CRON_FREQUENT=1` set on the project | every 5 minutes |
+| `/api/cron/publish` | daily, 09:00 UTC | every 5 minutes |
+| `/api/cron/metrics` | daily, 09:30 UTC | every 6 hours |
 
-### On Hobby — GitHub Actions
+Confirm both appear under the project's **Cron Jobs** tab. Vercel sends
+`Authorization: Bearer $CRON_SECRET` automatically once that variable exists on
+the project.
 
-`.github/workflows/scheduler.yml` ships **disabled**, because a workflow that
-runs every five minutes without its secrets just fills your inbox with failures.
+### What daily publishing actually means
 
-1. Add both repository secrets under **Settings → Secrets and variables →
-   Actions**:
+A post queued for Tuesday 16:30 does not go out at 16:30. It goes out at the
+next daily cron run. **Plan the cadence around one publish window a day, or
+raise the frequency.**
 
-   | Secret | Value |
-   |---|---|
-   | `APP_URL` | `https://your-app.vercel.app` |
-   | `CRON_SECRET` | the same value set on the Vercel project |
-
-2. Enable it:
-
-   ```bash
-   gh workflow enable scheduler.yml
-   ```
-
-3. Run it once by hand (**Actions → Scheduler → Run workflow**) and read the
-   output. A `401` means `CRON_SECRET` doesn't match the Vercel project.
-
-If you enable it before adding the secrets it will skip with a notice rather
-than fail, but it also won't publish anything.
-
-To stop it at any time:
-
-```bash
-gh workflow disable scheduler.yml
-```
-
-GitHub's scheduler is best-effort and can lag several minutes under load, so a
-post may go out slightly after its slot. Fine for social scheduling.
-
-### On Pro — Vercel Cron
+To raise it:
 
 ```bash
 vercel env add CRON_FREQUENT production   # value: 1
 vercel --prod
 ```
 
-Then delete `.github/workflows/scheduler.yml`. Confirm both jobs appear under the
-project's **Cron Jobs** tab. Vercel sends `Authorization: Bearer $CRON_SECRET`
-automatically once the variable exists on the project.
+That needs a Vercel Pro plan; on Hobby the deploy is rejected.
 
-Running both at once is harmless — `publishDuePosts` only picks up posts whose
-scheduled time has already passed, so nothing publishes twice.
+### Publishing without waiting for cron
+
+Any post can go out immediately from the app — **Publish now** in the composer,
+or the action menu on any queued post. The cron only exists to publish things
+you scheduled and then walked away from.
+
+### Driving it from somewhere else
+
+The two endpoints are plain authenticated HTTP, so any scheduler can call them
+— an external cron service, a server you already run, or a laptop:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-app.vercel.app/api/cron/publish
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-app.vercel.app/api/cron/metrics
+```
+
+Locally, `npm run worker` does exactly this on a loop.
 
 ---
 
