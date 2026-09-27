@@ -20,7 +20,8 @@
     "check": "npm run typecheck && npm run lint && npm run test",
     "test": "vitest run",
     "test:watch": "vitest",
-    "screenshots": "node scripts/capture-screenshots.mjs"
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "reels": "node scripts/record-reels.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.54",
