@@ -76,12 +76,18 @@ positioned to clear Instagram's UI. A second layer will collide.
 Sixfold can publish these itself once Instagram is connected — a single video
 on a post publishes as a Reel. Two things are still needed:
 
-1. **Instagram connected via OAuth.** Needs a Meta Developer app and your
-   account converted to a Business account linked to a Facebook Page. See
-   [docs/DEPLOYMENT.md](../../docs/DEPLOYMENT.md).
-2. **The video on a public URL.** Instagram fetches media rather than accepting
-   an upload. Any public host works, or enable Vercel Blob and upload from the
-   composer.
+**The video already has a public URL.** jsDelivr serves this repo as a CDN with
+the right MIME type, so these are ready to paste into the composer:
+
+```
+https://cdn.jsdelivr.net/gh/AnupamaJain/social-coonects@main/marketing/reels/01-ai-slop.mp4
+https://cdn.jsdelivr.net/gh/AnupamaJain/social-coonects@main/marketing/reels/02-three-faults.mp4
+https://cdn.jsdelivr.net/gh/AnupamaJain/social-coonects@main/marketing/reels/03-queue.mp4
+```
+
+**Instagram still needs connecting**, which takes a browser and your login —
+about 15 minutes, no App Review, no cost. Step by step in
+[docs/INSTAGRAM-SETUP.md](../../docs/INSTAGRAM-SETUP.md).
 
 Until then, post them from the Instagram app directly — the files are ready.
 

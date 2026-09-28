@@ -19,7 +19,8 @@ Built on ideas from [langchain-ai/social-media-agent](https://github.com/langcha
 rebuilt as a product rather than a LangGraph CLI.
 
 **Docs:** [Architecture](docs/ARCHITECTURE.md) · [Deployment](docs/DEPLOYMENT.md) ·
-[Security](docs/SECURITY.md) · [Operations](docs/OPERATIONS.md)
+[Security](docs/SECURITY.md) · [Operations](docs/OPERATIONS.md) ·
+[Connecting Instagram](docs/INSTAGRAM-SETUP.md)
 
 ---
 
@@ -151,7 +152,7 @@ URL, then put the credentials in `.env.local`.
 |---|---|---|---|
 | X | [developer.x.com](https://developer.x.com/en/portal/dashboard) | `{APP_URL}/api/oauth/x/callback` | OAuth 2.0 with PKCE. Needs `tweet.write` |
 | LinkedIn | [linkedin.com/developers](https://www.linkedin.com/developers/apps) | `{APP_URL}/api/oauth/linkedin/callback` | Add both "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect" |
-| Instagram | [developers.facebook.com](https://developers.facebook.com/apps) | `{APP_URL}/api/oauth/instagram/callback` | Requires a Business account linked to a Facebook Page. **Instagram will not accept a post without an image** |
+| Instagram | [developers.facebook.com](https://developers.facebook.com/apps) | `{APP_URL}/api/oauth/instagram/callback` | Requires a Business account linked to a Facebook Page — full walkthrough in [docs/INSTAGRAM-SETUP.md](docs/INSTAGRAM-SETUP.md) |
 | Facebook | same Meta app | `{APP_URL}/api/oauth/facebook/callback` | Publishes to a Page, not a personal profile |
 | Threads | [Threads API](https://developers.facebook.com/docs/threads) | `{APP_URL}/api/oauth/threads/callback` | |
 | Mastodon | your instance → Preferences → Development | `{APP_URL}/api/oauth/mastodon/callback` | Set `MASTODON_INSTANCE` to your server |
